@@ -1,0 +1,120 @@
+<h3><%= @roster.name %></h3>
+<hr>
+<table class="table table-bordered table-hover">
+  <tr>
+    <th>Pos</th>
+    <th>Forwards/Defenseman</th>
+    <% for i in 0..6 %>
+      <th><%= table_time(Time.now + i.day) %></th>
+    <% end %>
+  </tr>
+  <% @roster.positions.where(id: [1, 2, 3, 4, 6, 7]).each do |pos| %>
+    <% row_player = determine_forward(pos, current_day) %>
+    <% if row_player %>
+      <% @forwards = @forwards.size > 0 ? @forwards.select { |f| f.id != row_player.id } : [] %>
+    <% end %>
+    <tr>
+      <td><%= pos.name || "Empty" %></td>
+      <td>
+        <%= row_player ? row_player.name : "Empty" %>
+      </td>
+      <% for j in 0..6 %>
+        <% parsed_datetime = (Date.today + j.day).beginning_of_day %>
+        <% if row_player %>
+          <% game = row_player.team.games.find_by(date: parsed_datetime) %>
+          <% if game %>
+            <td><%= (game.teams - [row_player.team]).first.name %></td>
+          <% else %>
+            <td> </td>
+          <% end %>
+        <% else %>
+          <td></td>
+        <% end %> 
+      <% end %>
+    </tr>
+  <% end %>
+  <% if @forwards.size > 0 %>
+    <% for i in 0..(@forwards.size - 1) %>
+      <% row_player = @forwards[i] %>
+      <tr>
+        <td>BN</td>
+        <td>
+          <%= row_player.name %>
+        </td>
+        <% for j in 0..6 %>
+          <% parsed_datetime = (Date.today + j.day).beginning_of_day %>
+          <% if row_player %>
+            <% game = row_player.team.games.find_by(date: parsed_datetime) %>
+            <% if game %>
+              <td><%= (game.teams - [row_player.team]).first.name %></td>
+            <% else %>
+              <td> </td>
+            <% end %>
+          <% else %>
+            <td></td>
+          <% end %> 
+        <% end %>
+      </tr>
+    <% end %>
+  <% end %>
+</table>
+<br>
+
+<table class="table table-bordered table-hover">
+  <tr>
+    <th>Pos</th>
+    <th>Goaltenders</th>
+    <% i = 0 %>
+    <% 7.times do %>
+      <th><%= table_time(Time.now + i.day) %></th>
+      <% i += 1 %>
+    <% end %>
+  </tr>
+  <% @roster.positions.where(id: [5]).each do |pos| %>
+    <% row_player = nil %>
+    <% row_player = @goalies.first unless @goalies.empty? %>
+    <% @goalies = @goalies.size > 0 ? @goalies.select { |f| f.id != row_player.id } : [] %>
+    <tr>
+      <td><%= pos.name || "Empty" %></td>
+      <td>
+        <%= row_player ? row_player.name : "Empty" %>
+      </td>
+      <% for j in 0..6 %>
+        <% parsed_datetime = (Date.today + j.day).beginning_of_day %>
+        <% if row_player %>
+          <% game = row_player.team.games.find_by(date: parsed_datetime) %>
+          <td><%= (game.teams - [row_player.team]).first.name if game %></td>
+        <% else %>
+          <td></td>
+        <% end %> 
+      <% end %>
+    </tr>
+  <% end %>
+  <% if @goalies.size > 0 %>
+    <% for i in 0..(@goalies.size - 1) %>
+      <% row_player = @goalies[i] %>
+      <tr>
+        <td>BN</td>
+        <td>
+          <%= row_player.name %>
+        </td>
+        <% for j in 0..6 %>
+          <% parsed_datetime = (Date.today + j.day).beginning_of_day %>
+          <% if row_player %>
+            <% game = row_player.team.games.find_by(date: parsed_datetime) %>
+            <% if game %>
+              <td bgcolor="#00FF00"><%= (game.teams - [row_player.team]).first.name %></td>
+            <% else %>
+              <td> </td>
+            <% end %>
+          <% else %>
+            <td></td>
+          <% end %> 
+        <% end %>
+      </tr>
+    <% end %>
+  <% end %>
+</table>
+<br>
+
+<%= link_to "Update roster", edit_roster_path, class: "btn btn-primary"%>

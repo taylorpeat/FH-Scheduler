@@ -1,0 +1,13 @@
+<h4>Select a team:</h4>
+<br>
+<% if !@rosters.empty? %>
+  <% @rosters.each do |roster| %>
+    <%= link_to roster.name, roster_path(roster), class: "btn btn-default" %>
+    <br>
+  <% end %>
+<% else %>
+  You have no rosters.
+<% end %>
+<br>
+<br>
+<%= link_to "Create a new roster", new_roster_path, class: "btn btn-primary" %>

@@ -1,0 +1,19 @@
+<h1>Welcome to the Fantasy Hockey Scheduler</h1>
+
+<% if current_user && current_user.guest? %>
+  <%= link_to "Roster Page", rosters_path, class: "btn btn-default" %>
+  |
+  <%= link_to "Register", register_path, class: "btn btn-primary" %>
+  |
+  <%= link_to "Logout", logout_path, class: "btn btn-danger" %>
+<% elsif logged_in? %>
+  <%= link_to "Roster Page", rosters_path, class: "btn btn-default" %>
+  |
+  <%= link_to "Logout", logout_path, class: "btn btn-danger" %>
+<% else %>
+  <%= link_to "Register", register_path, class: "btn btn-primary" %>
+  |
+  <%= link_to "Login", login_path, class: "btn btn-default" %>
+  |
+  <%= link_to "Login as Guest", users_path, class: "btn btn-default", method: 'post' %>
+<% end %>

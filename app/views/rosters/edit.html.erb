@@ -1,0 +1,22 @@
+<h3><%= @roster.name %></h3>
+<hr>
+
+<%= form_for @roster, method: "patch" do |f| %>
+  <table class="table table-bordered table-hover">
+    <tr>
+      <th>Roster Slot</th>
+      <th>Player</th>
+    </tr>
+    <% for i in 1..@roster.player_max %>
+      <tr>
+        <td><%= "Slot #{i}" %></td>
+        <td>
+          <%= f.collection_select :player_ids, @players, :id, :name_for_select, {include_blank: 'None', selected: @roster.player_ids[i - 1] }, { name: "roster[player_ids][]" } %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+  <%= link_to "Add another roster slot", add_slot_roster_path(@roster), class: "btn btn-default", method: 'post' %>
+
+  <%= f.submit "Update roster", class: "btn btn-primary"%>
+<% end %>
