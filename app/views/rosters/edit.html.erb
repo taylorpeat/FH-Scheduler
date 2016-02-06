@@ -9,7 +9,12 @@
     </tr>
     <% for i in 1..@roster.player_max %>
       <tr>
-        <td><%= "Slot #{i}" %></td>
+        <td>
+          <%= "Slot #{i}" %>
+          <% if i >= (@roster.player_max - ir_slot_count) %>
+            <b><%= " - IR Player Only" %></b>
+          <% end %>
+        </td>
         <td>
           <%= f.collection_select :player_ids, @players, :id, :name_for_select, {include_blank: 'None', selected: @roster.player_ids[i - 1] }, { name: "roster[player_ids][]" } %>
         </td>

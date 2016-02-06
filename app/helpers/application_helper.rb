@@ -15,4 +15,8 @@ module ApplicationHelper
   def current_day
     Date.today.beginning_of_day
   end
+
+  def ir_slot_count
+    @roster.positions.select { |pos| pos == 9 }.size
+  end
 end

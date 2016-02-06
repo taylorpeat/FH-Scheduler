@@ -22,10 +22,10 @@ CSV.foreach('db/players.csv', headers: true) do |row|
 end
 
 
-GamesTeam.delete_all
+GameTeam.delete_all
 
 CSV.foreach('db/games_teams.csv') do |row|
-  GamesTeam.create(game_id: row[0], team_id: row[1])
+  GameTeam.create(game_id: row[0], team_id: row[1])
 end
 
 
@@ -36,9 +36,9 @@ CSV.foreach('db/teams.csv') do |row|
 end
 
 
-PlayersPosition.delete_all
+PlayerPosition.delete_all
 
 CSV.foreach('db/players_positions.csv') do |row|
-  PlayersPosition.create(player_id: row[0], position_id: row[1])
+  PlayerPosition.create(player_id: row[0], position_id: row[1])
 end
 
