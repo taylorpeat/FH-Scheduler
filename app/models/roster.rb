@@ -6,9 +6,11 @@ class Roster < ActiveRecord::Base
   has_many :players, through: :player_rosters
 
   attr_reader :roster_hash, :day
+  attr_accessor :conflicts
 
   def hash(roster_day)
     @day = roster_day
+    @conflicts = []
     initialize_hash
     assign_all_players
     roster_hash
@@ -70,8 +72,8 @@ class Roster < ActiveRecord::Base
             if slot_val != ""
               roster_hash[pos].reverse.each_with_index do |slot_val, idx|
                 if criteria.call(slot_val)
-                  assign_player_to_bench_or_ir(slot_val, 8)
                   implement_move(player.id, pos, roster_hash[pos].size - idx - 1)
+                  assign_player_to_bench_or_ir(slot_val, 8)
                   return true
                 end
               end
@@ -86,6 +88,28 @@ class Roster < ActiveRecord::Base
 
     def assign_player_to_bench_or_ir(player_id, pos)
       roster_hash[pos] += [player_id]
+      if self.players.find(player_id).team.games.find_by(date: day)
+        unless roster_hash[:conflicts].include?(player_id) || pos == 9
+          roster_hash[:conflicts] += [player_id]
+          update_conflict_positions(player_id)
+          update_conflict_players
+        end
+      end
+    end
+
+    def update_conflict_positions(player_id)
+      new_conflicts = self.players.find(player_id).position_ids - conflicts
+      self.conflicts += new_conflicts
+      new_conflicts.each do |pos|
+        roster_hash[pos].each do |pos_player_id|
+          update_conflict_positions(pos_player_id)
+        end
+      end
+    end
+
+    def update_conflict_players
+      roster_hash[:conflicts] += conflicts.map { |pos| roster_hash[pos] }.flatten
+      roster_hash[:conflicts].uniq!
     end
 
     def move_other_players(positions_to_check, positions_checked, &criteria)
