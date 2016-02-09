@@ -17,4 +17,12 @@ class ApplicationController < ActionController::Base
     # determine which positions are available each day for a week, return hash
     #{today: [c,lw,rw,d], tomorrow: [c]}
   end
+
+  def set_daily_rosters(day)
+    daily_rosters = []
+    for i in 0..13
+      daily_rosters << @roster.hash(day + i.day)
+    end
+    daily_rosters
+  end
 end

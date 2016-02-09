@@ -4,22 +4,24 @@
   <tr>
     <th>Pos</th>
     <th>Forwards/Defenseman</th>
-    <% for i in 0..6 %>
-      <th><%= table_time(Time.now + i.day) %></th>
+    <% for i in 0..13 %>
+      <th><%= table_time(Time.now.beginning_of_week + i.day) %></th>
+      <% if [6,13].include?(i) %>
+        <th><%= "Games" %></th>
+        <th><%= "Conflicts" %></th>
+      <% end %>
     <% end %>
   </tr>
-  <% @roster.positions.where(id: [1, 2, 3, 4, 6, 7]).each do |pos| %>
-    <% row_player = determine_forward(pos, current_day) %>
-    <% if row_player %>
-      <% @forwards = @forwards.size > 0 ? @forwards.select { |f| f.id != row_player.id } : [] %>
-    <% end %>
+  <% @roster.hash(Date.today.beginning_of_day).select { |pos, players| [1,2,3,4,6,7,8,9].include?(pos) }.each do |pos, players| %>
+    <% players.each do |player_id| %>
+    <% row_player = find_player(player_id) %>
     <tr>
-      <td><%= pos.name || "Empty" %></td>
+      <td><%= find_position(pos).name || "Empty" %></td>
       <td>
         <%= row_player ? row_player.name : "Empty" %>
       </td>
-      <% for j in 0..6 %>
-        <% parsed_datetime = (Date.today + j.day).beginning_of_day %>
+      <% for j in 0..13 %>
+        <% parsed_datetime = (Date.today.beginning_of_week + j.day).beginning_of_day %>
         <% if row_player %>
           <% game = row_player.team.games.find_by(date: parsed_datetime) %>
           <% if game %>
@@ -32,29 +34,6 @@
         <% end %> 
       <% end %>
     </tr>
-  <% end %>
-  <% if @forwards.size > 0 %>
-    <% for i in 0..(@forwards.size - 1) %>
-      <% row_player = @forwards[i] %>
-      <tr>
-        <td>BN</td>
-        <td>
-          <%= row_player.name %>
-        </td>
-        <% for j in 0..6 %>
-          <% parsed_datetime = (Date.today + j.day).beginning_of_day %>
-          <% if row_player %>
-            <% game = row_player.team.games.find_by(date: parsed_datetime) %>
-            <% if game %>
-              <td><%= (game.teams - [row_player.team]).first.name %></td>
-            <% else %>
-              <td> </td>
-            <% end %>
-          <% else %>
-            <td></td>
-          <% end %> 
-        <% end %>
-      </tr>
     <% end %>
   <% end %>
 </table>
@@ -65,8 +44,8 @@
     <th>Pos</th>
     <th>Goaltenders</th>
     <% i = 0 %>
-    <% 7.times do %>
-      <th><%= table_time(Time.now + i.day) %></th>
+    <% 14.times do %>
+      <th><%= table_time(Time.now.beginning_of_week + i.day) %></th>
       <% i += 1 %>
     <% end %>
   </tr>
@@ -79,8 +58,8 @@
       <td>
         <%= row_player ? row_player.name : "Empty" %>
       </td>
-      <% for j in 0..6 %>
-        <% parsed_datetime = (Date.today + j.day).beginning_of_day %>
+      <% for j in 0..13 %>
+        <% parsed_datetime = (Date.today.beginning_of_week + j.day).beginning_of_day %>
         <% if row_player %>
           <% game = row_player.team.games.find_by(date: parsed_datetime) %>
           <td><%= (game.teams - [row_player.team]).first.name if game %></td>
@@ -98,8 +77,8 @@
         <td>
           <%= row_player.name %>
         </td>
-        <% for j in 0..6 %>
-          <% parsed_datetime = (Date.today + j.day).beginning_of_day %>
+        <% for j in 0..13 %>
+          <% parsed_datetime = (Date.today.beginning_of_week + j.day).beginning_of_day %>
           <% if row_player %>
             <% game = row_player.team.games.find_by(date: parsed_datetime) %>
             <% if game %>
@@ -116,5 +95,4 @@
   <% end %>
 </table>
 <br>
-
 <%= link_to "Update roster", edit_roster_path, class: "btn btn-primary"%>

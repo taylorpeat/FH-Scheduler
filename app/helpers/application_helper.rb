@@ -16,6 +16,14 @@ module ApplicationHelper
     Date.today.beginning_of_day
   end
 
+  def find_player(player_id)
+    @roster.players.find(player_id) if player_id != ""
+  end
+
+  def find_position(pos_id)
+    @roster.positions.find(pos_id)
+  end
+
   def ir_slot_count
     @roster.positions.select { |pos| pos == 9 }.size
   end

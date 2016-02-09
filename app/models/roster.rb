@@ -16,6 +16,14 @@ class Roster < ActiveRecord::Base
     roster_hash
   end
 
+  def set_daily_rosters(roster_day)
+    daily_rosters = []
+    for i in 0..13
+      daily_rosters << self.hash(roster_day + i.day)
+    end
+    daily_rosters
+  end
+
   private
 
     def initialize_hash
@@ -27,6 +35,7 @@ class Roster < ActiveRecord::Base
 
     def assign_all_players
       non_ir_player_size = self.players.count - self.positions.select { |pos| pos.id == 9 }.size
+      non_ir_player_size = 0 if non_ir_player_size < 0
       assign_ir_players(non_ir_player_size)
       self.players.take(non_ir_player_size).sort.each do |player|
         assign_single_player(player)
@@ -90,7 +99,7 @@ class Roster < ActiveRecord::Base
       roster_hash[pos] += [player_id]
       if self.players.find(player_id).team.games.find_by(date: day)
         unless roster_hash[:conflicts].include?(player_id) || pos == 9
-          roster_hash[:conflicts] += [player_id]
+          roster_hash[:conflicts] += [player]
           update_conflict_positions(player_id)
           update_conflict_players
         end

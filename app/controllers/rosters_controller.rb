@@ -5,7 +5,7 @@ class RostersController < ApplicationController
   def show
     @forwards = @roster.players.select { |player| player.positions.all? { |pos| [1,2,3,4,6,7,8].include? pos.id } }.sort
     @goalies = @roster.players.select { |player| player.positions.all? { |pos| pos.id == 5 } }.sort
-    # @day_statuses = determine_day_statuses(@roster)
+    @daily_rosters = @roster.set_daily_rosters(Date.today.beginning_of_week.beginning_of_day)
   end
 
   def new
