@@ -28,7 +28,7 @@ class Roster < ActiveRecord::Base
 
     def initialize_hash
       @roster_hash = Hash.new([])
-      self.positions.select { |pos| ![8,9].include?(pos.id) }.each do |position|
+      self.positions.each do |position|
         roster_hash[position.id] += [""]
       end
     end
@@ -38,6 +38,7 @@ class Roster < ActiveRecord::Base
       non_ir_player_size = 0 if non_ir_player_size < 0
       assign_ir_players(non_ir_player_size)
       self.players.take(non_ir_player_size).sort.each do |player|
+        binding.pry
         assign_single_player(player)
       end
     end
@@ -96,15 +97,30 @@ class Roster < ActiveRecord::Base
     end
 
     def assign_player_to_bench_or_ir(player_id, pos)
-      roster_hash[pos] += [player_id]
+      add_or_replace_bench_or_ir(player_id, pos)
       if self.players.find(player_id).team.games.find_by(date: day)
         unless roster_hash[:conflicts].include?(player_id) || pos == 9
-          roster_hash[:conflicts] += [player]
+          roster_hash[:conflicts] += [player_id]
           update_conflict_positions(player_id)
           update_conflict_players
         end
       end
     end
+
+    def add_or_replace_bench_or_ir(player_id, pos)
+      if roster_hash[pos].include?("")
+        roster_hash[pos].each_with_index do |slot_val, idx|
+          if slot_val == ""
+            roster_hash[pos][idx] = player_id
+            break
+          end
+        end
+      else
+        roster_hash[pos] += [player_id]
+      end
+    end
+
+
 
     def update_conflict_positions(player_id)
       new_conflicts = self.players.find(player_id).position_ids - conflicts
@@ -151,7 +167,6 @@ class Roster < ActiveRecord::Base
               end
               current_pos, current_idx = find_current_location(player_id)
               implement_move("", current_pos, current_idx)
-              binding.pry
               implement_move(player_id, pos, roster_hash[pos].size - idx - 1)
               return true
             end

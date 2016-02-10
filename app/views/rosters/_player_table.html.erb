@@ -1,0 +1,32 @@
+<% row_player = find_player(player_id) %>
+<% player_games = 0 %>
+<tr>
+  <td><%= find_position(pos).name || "Empty" %></td>
+  <td>
+    <%= row_player ? row_player.name : "Empty" %>
+  </td>
+  <% for j in 0..13 %>
+    <% parsed_datetime = (Date.today.beginning_of_week + j.day).beginning_of_day %>
+    <% if row_player %>
+      <% game = row_player.team.games.find_by(date: parsed_datetime) %>
+      <% if game %>
+        <% player_games += 1 %>
+        <td><%= (game.teams - [row_player.team]).first.name %></td>
+      <% else %>
+        <td> </td>
+      <% end %>
+    <% else %>
+      <td></td>
+    <% end %> 
+    <% if j == 6 || j == 13 %>
+      <td><%= row_player ? player_games : "0" %></td>
+      <% conflicts = 0 %>
+      <% @daily_rosters.each do |roster_day| %>
+        <% conflicts += 1 if roster_day[:conflicts].include?(player_id) %>
+      <% end %>
+      <td><%= conflicts %></td>
+      <% conflicts = 0 %>
+      <% player_games = 0 %>
+    <% end %>
+  <% end %>
+</tr>
