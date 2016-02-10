@@ -3,7 +3,7 @@
 <tr>
   <td><%= find_position(pos).name || "Empty" %></td>
   <td>
-    <%= row_player ? row_player.name : "Empty" %>
+    <%= row_player ? "#{row_player.name} #{row_player.team.name.upcase} - #{get_player_positions(row_player)}" : "Empty" %>
   </td>
   <% conflicts = 0 %>
   <% for j in 0..13 %>

@@ -5,7 +5,8 @@ class RostersController < ApplicationController
   def show
     @day_change = params[:day_change].to_i || 0
     @week_change = params[:week_change].to_i || 0
-    @daily_rosters = @roster.set_daily_rosters(Date.today.beginning_of_week.beginning_of_day)
+    start_day = (Date.today.beginning_of_week + @week_change.week).beginning_of_day
+    @daily_rosters = @roster.set_daily_rosters(start_day)
   end
 
   def new

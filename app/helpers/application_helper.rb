@@ -1,7 +1,7 @@
 module ApplicationHelper
 
   def table_time(time)
-    time = time.strftime("%m/%d")
+    time.strftime("%m/%d")
   end
 
   def determine_forward(pos, game_date)
@@ -38,14 +38,26 @@ module ApplicationHelper
 
   def changed_date
     if @week_change == 0
-      (Date.today.beginning_of_day + @day_change.day).beginning_of_day
+      Date.today.beginning_of_day + @day_change.day
     else
       (changed_week + @day_change.day).beginning_of_day
     end
   end
 
   def changed_week
-    (Date.today.beginning_of_week + @week_change.week).beginning_of_day
+    Date.today.beginning_of_week + @week_change.week
+  end
+
+  def initial_time_offset
+    if @week_change == 0
+      (Date.today.beginning_of_week - Date.today).to_i
+    else
+      0
+    end
+  end
+
+  def get_player_positions(player)
+    player.positions.select {|pos| ![6,7,8,9].include?(pos.id) }.map {|pos| pos.name }.join(",")
   end
 
 end

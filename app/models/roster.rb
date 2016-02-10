@@ -39,6 +39,7 @@ class Roster < ActiveRecord::Base
       assign_ir_players(non_ir_player_size)
       self.players.take(non_ir_player_size).sort.each do |player|
         assign_single_player(player)
+
       end
     end
 
@@ -52,9 +53,12 @@ class Roster < ActiveRecord::Base
       no_player = Proc.new { |slot_val| slot_val == "" }
       no_game = Proc.new { |slot_val| !self.players.find(slot_val).team.games.find_by(date: day) }
       unless assign_to_slot(player, &no_player)
+
         if no_game.call(player.id)
+
           assign_player_to_bench_or_ir(player.id, 8)
         else
+
           unless assign_to_slot(player, &no_game)
             assign_player_to_bench_or_ir(player.id, 8)
           end
@@ -63,6 +67,7 @@ class Roster < ActiveRecord::Base
     end
 
     def assign_to_slot(player, &criteria)
+
       if assign_player_directly(player, &criteria)
         return true
       else
@@ -75,6 +80,7 @@ class Roster < ActiveRecord::Base
     end
 
     def assign_player_directly(player, &criteria)
+
       player.position_ids.each do |pos|
         roster_hash[pos].each_with_index do |slot_val, idx|
           if criteria.call(slot_val)
@@ -96,6 +102,7 @@ class Roster < ActiveRecord::Base
     end
 
     def assign_player_to_bench_or_ir(player_id, pos)
+
       add_or_replace_bench_or_ir(player_id, pos)
       if self.players.find(player_id).team.games.find_by(date: day)
         unless roster_hash[:conflicts].include?(player_id) || pos == 9
@@ -187,10 +194,6 @@ class Roster < ActiveRecord::Base
       current_pos = current_slot[0]
       current_idx = current_slot[1].find_index(player_id)
       [current_pos, current_idx]
-    end
-
-    def player_game?(player_id, day)
-      self.players.find(player_id).team.games.find_by(date: day)
     end
 
 end
