@@ -5,26 +5,33 @@
   <td>
     <%= row_player ? row_player.name : "Empty" %>
   </td>
+  <% conflicts = 0 %>
   <% for j in 0..13 %>
-    <% parsed_datetime = (Date.today.beginning_of_week + j.day).beginning_of_day %>
+    <% if @daily_rosters[j][:conflicts].include?(player_id) %>
+      <% conflicts += 1 %>
+      <% conflict_status = true %>
+    <% else %>
+      <% conflict_status = false %>
+    <% end %>
+    <% parsed_datetime = (changed_week + j.day).beginning_of_day %>
     <% if row_player %>
       <% game = row_player.team.games.find_by(date: parsed_datetime) %>
       <% if game %>
         <% player_games += 1 %>
-        <td><%= (game.teams - [row_player.team]).first.name %></td>
+        <%= raw highlight?(parsed_datetime, conflict_status) %>
+          <%= (game.teams - [row_player.team]).first.name %>
+        </td>
       <% else %>
-        <td> </td>
+        <%= raw highlight?(parsed_datetime, conflict_status) %>
+        </td>
       <% end %>
     <% else %>
-      <td></td>
+      <%= raw highlight?(parsed_datetime, conflict_status) %>
+      </td>
     <% end %> 
     <% if j == 6 || j == 13 %>
-      <td><%= row_player ? player_games : "0" %></td>
-      <% conflicts = 0 %>
-      <% @daily_rosters.each do |roster_day| %>
-        <% conflicts += 1 if roster_day[:conflicts].include?(player_id) %>
-      <% end %>
-      <td><%= conflicts %></td>
+      <td bgcolor="DCDCDC"><%= row_player ? player_games : "0" %></td>
+      <td bgcolor="DCDCDC"><%= conflicts %></td>
       <% conflicts = 0 %>
       <% player_games = 0 %>
     <% end %>

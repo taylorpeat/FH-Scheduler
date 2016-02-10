@@ -1,19 +1,31 @@
-<% binding.pry %>
 <h3><%= @roster.name %></h3>
 <hr>
+<%= link_to "Update roster", edit_roster_path, class: "btn btn-primary"%>
+<%= link_to "Previous Day", roster_path(@roster, day_change: @day_change - 1, week_change: @week_change), class: "btn btn-default" %>
+<%= link_to "Next Day", roster_path(@roster, day_change: @day_change + 1, week_change: @week_change), class: "btn btn-default" %>
+<%= link_to "Last Week", roster_path(@roster, week_change: @week_change - 1, day_change: 0), class: "btn btn-warning" %>
+<%= link_to "Next Week", roster_path(@roster, week_change: @week_change + 1, day_change: 0), class: "btn btn-warning" %>
+<br>
+<br>
 <table class="table table-bordered table-hover">
   <tr>
     <th>Pos</th>
     <th>Forwards/Defenseman</th>
     <% for i in 0..13 %>
-      <th><%= table_time(Time.now.beginning_of_week + i.day) %></th>
+      <% if changed_date == (changed_week + i.day) %>
+        <th bgcolor="#e5e5ff">
+      <% else %>
+        <th>
+      <% end %>
+        <%= table_time(changed_week + i.day) %>
+      </th>
       <% if [6,13].include?(i) %>
-        <th><%= "Games" %></th>
-        <th><%= "Conflicts" %></th>
+        <th bgcolor="#DCDCDC"><%= "Games" %></th>
+        <th bgcolor="#DCDCDC"><%= "Conflicts" %></th>
       <% end %>
     <% end %>
   </tr>
-  <% @roster.hash(Date.today.beginning_of_day).select { |pos, players| pos != 5 }.each do |pos, players| %>
+  <% @roster.hash(changed_date.beginning_of_day).select { |pos, players| ![5, :conflicts].include?(pos) }.each do |pos, players| %>
     <% players.select { |player_id| find_player(player_id).nil? || !find_player(player_id).position_ids.include?(5) }.each do |player_id| %>
       <%= render 'player_table', player_id: player_id, pos: pos %>
     <% end %>
@@ -26,23 +38,28 @@
     <th>Pos</th>
     <th>Goaltenders</th>
     <% for i in 0..13 %>
-      <th><%= table_time(Time.now.beginning_of_week + i.day) %></th>
+    <% if changed_date == (changed_week + i.day) %>
+      <th bgcolor="#e5e5ff">
+    <% else %>
+      <th>
+    <% end %>
+        <%= table_time(changed_week + i.day) %>
+      </th>
       <% if [6,13].include?(i) %>
-        <th><%= "Games" %></th>
-        <th><%= "Conflicts" %></th>
+        <th bgcolor="#DCDCDC"><%= "Games" %></th>
+        <th bgcolor="#DCDCDC"><%= "Conflicts" %></th>
       <% end %>
     <% end %>
   </tr>
-  <% @roster.hash(Date.today.beginning_of_day).select { |pos, players| pos == 5 }.each do |pos, players| %>
+  <% @roster.hash(changed_date.beginning_of_day).select { |pos, players| pos == 5 }.each do |pos, players| %>
     <% players.each do |player_id| %>
       <%= render 'player_table', player_id: player_id, pos: pos %>
     <% end %>
   <% end %>
-  <% @roster.hash(Date.today.beginning_of_day).select { |pos, players| [8,9].include?(pos) }.each do |pos, players| %>
+  <% @roster.hash(changed_date.beginning_of_day).select { |pos, players| [8,9].include?(pos) }.each do |pos, players| %>
     <% players.select { |player_id| !find_player(player_id).nil? && find_player(player_id).position_ids.include?(5) }.each do |player_id| %>
       <%= render 'player_table', player_id: player_id, pos: pos %>
     <% end %>
   <% end %>
 </table>
 <br>
-<%= link_to "Update roster", edit_roster_path, class: "btn btn-primary"%>

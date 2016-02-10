@@ -38,7 +38,6 @@ class Roster < ActiveRecord::Base
       non_ir_player_size = 0 if non_ir_player_size < 0
       assign_ir_players(non_ir_player_size)
       self.players.take(non_ir_player_size).sort.each do |player|
-        binding.pry
         assign_single_player(player)
       end
     end
@@ -151,7 +150,10 @@ class Roster < ActiveRecord::Base
         if next_positions_to_check.empty?
           return false
         else
-          return true if move_other_players(next_positions_to_check, new_positions_checked, &criteria)
+          if move_other_players(next_positions_to_check, new_positions_checked, &criteria)
+            move_other_players(positions_to_check, positions_checked) { |slot_val| slot_val == "" }
+            return true
+          end
         end
       end
       false
@@ -185,6 +187,10 @@ class Roster < ActiveRecord::Base
       current_pos = current_slot[0]
       current_idx = current_slot[1].find_index(player_id)
       [current_pos, current_idx]
+    end
+
+    def player_game?(player_id, day)
+      self.players.find(player_id).team.games.find_by(date: day)
     end
 
 end

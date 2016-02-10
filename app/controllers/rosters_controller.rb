@@ -3,8 +3,8 @@ class RostersController < ApplicationController
   before_action :set_roster, only: [:show, :edit, :update, :add_slot]
 
   def show
-    @forwards = @roster.players.select { |player| player.positions.all? { |pos| [1,2,3,4,6,7,8].include? pos.id } }.sort
-    @goalies = @roster.players.select { |player| player.positions.all? { |pos| pos.id == 5 } }.sort
+    @day_change = params[:day_change].to_i || 0
+    @week_change = params[:week_change].to_i || 0
     @daily_rosters = @roster.set_daily_rosters(Date.today.beginning_of_week.beginning_of_day)
   end
 
@@ -64,6 +64,10 @@ class RostersController < ApplicationController
   private
     def roster_params
       params.require(:roster).permit(player_ids: [])
+    end
+
+    def schedule_params
+      params.require(:schedule).permit(:day)
     end
 
     def set_roster
