@@ -60,4 +60,16 @@ module ApplicationHelper
     player.positions.select {|pos| ![6,7,8,9].include?(pos.id) }.map {|pos| pos.name }.join(",")
   end
 
+  def set_team_games
+    day0 = changed_week.beginning_of_day
+    weekly_team_games = {}
+    Team.each do |team|
+      for day_num in 0..6
+        day = day0 + day_num.day
+        weekly_team_games[team.name] << team.games.find_by(date: day) ? :yes : :no
+      end
+    end
+    weekly_team_games
+  end
+
 end
