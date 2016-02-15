@@ -1,4 +1,5 @@
 module ApplicationHelper
+  include PlayerCheckable
 
   def table_time(time)
     time.strftime("%m/%d")
