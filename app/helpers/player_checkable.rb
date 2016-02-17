@@ -33,10 +33,11 @@ module PlayerCheckable
   def positions_of_associated_players(active_players, pos_id, prev_connected_positions)
     additional_positions = []
     connected_positions = active_players.select { |a_player| a_player.position_ids.include?(pos_id) }
-                         .map { |a_player| a_player.position_ids }.flatten.uniq
+                         .map { |a_player| a_player.position_ids }
+                         .select { |pos_id| @roster.position_ids.include?(pos_id) }.flatten.uniq
     new_connected_positions = connected_positions - prev_connected_positions
     new_connected_positions.each do |new_pos_id|
-      additional_positions = find_associated_players(active_players, new_pos_id,
+      additional_positions = positions_of_associated_players(active_players, new_pos_id,
                                                      prev_connected_positions + new_connected_positions)
     end
     binding.pry
