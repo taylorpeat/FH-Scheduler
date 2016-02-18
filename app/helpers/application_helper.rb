@@ -1,5 +1,6 @@
 module ApplicationHelper
   include PlayerCheckable
+  include TeamCheckable
 
   def table_time(time)
     time.strftime("%m/%d")
@@ -73,4 +74,16 @@ module ApplicationHelper
     weekly_team_games
   end
 
+  def player_open_games(player, dropped_player_id)
+    player_pos_open_games = []
+    player.position_ids.each do |pos|
+      player_pos_open_games << determine_open_positions(dropped_player_id)[pos]
+    end
+    binding.pry
+    player_pos_open_games.flatten.uniq & all_teams_games[player.team.id]
+  end
+
+  def player_games(player)
+    all_teams_games[player.team.id]
+  end
 end
