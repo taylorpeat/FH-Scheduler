@@ -6,7 +6,7 @@ module TeamCheckable
     Team.all.each do |team|
       teams_weekly_games[team.id] += team_week_games(team)
     end
-    teams_weekly_games
+    @teams_weekly_games = teams_weekly_games
   end  
 
   def team_week_games(team)

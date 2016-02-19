@@ -1,4 +1,3 @@
-<% binding.pry %>
 <h3><%= @roster.name %></h3>
 <hr>
 <%= link_to "Update roster", edit_roster_path, class: "btn btn-primary"%>
@@ -66,3 +65,59 @@
   <% end %>
 </table>
 <br>
+<% if @players_to_drop %>
+  <% dropped_players = @players_to_drop.map { |player_id| Player.find(player_id) } %>
+  <% dropped_players.each do |dropped_player| %>
+    <% set_open_games_per_position(dropped_player.id) %>
+    <%= "Dropping: #{dropped_player.name}" %>
+    <hr>
+    <br>
+    <%= "Recommended Adds:" %>
+    <br>
+    <% unless five_game_players.empty? %>
+      <br>
+      <%= "Players with 5+ games:" %>
+      <br>
+      <% five_game_players.slice(0..49).each do |player| %>
+        <%= " #{player.name} - #{player_open_games(player).size} games" %>
+        <br>
+      <% end %>
+    <% end %>
+    <% unless four_game_players.empty? %>
+      <br>
+      <%= "Players with 4 games:" %>
+      <br>
+      <% four_game_players.slice(0..49).each do |player| %>
+        <%= " #{player.name} - #{player_open_games(player).size} games" %>
+        <br>
+      <% end %>
+    <% end %>
+    <% unless three_game_players.empty? %>
+      <br>
+      <%= "Players with 3 games:" %>
+      <br>
+      <% three_game_players.slice(0..49).each do |player| %>
+        <%= " #{player.name} - #{player_open_games(player).size} games" %>
+        <br>
+      <% end %>
+    <% end %>
+    <% unless two_game_players.empty? || !four_game_players.empty? %>
+      <br>
+      <%= "Players with 2 games:" %>
+      <br>
+      <% two_game_players.slice(0..49).each do |player| %>
+        <%= " #{player.name} - #{player_open_games(player).size} games" %>
+        <br>
+      <% end %>
+    <% end %>
+    <% unless one_game_players.slice(0..49).empty? || !three_game_players.empty? %>
+      <br>
+      <%= "Players with 1 game:" %>
+      <br>
+      <% one_game_players.each do |player| %>
+        <%= " #{player.name} - #{player_open_games(player).size} games" %>
+        <br>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

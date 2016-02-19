@@ -1,24 +1,23 @@
 module PlayerCheckable
 
   def determine_open_positions(dropped_player_id)
+    @weekly_open_positions if @weekly_open_positions
     open_positions = Hash.new([])
-    day0 = changed_week.beginning_of_day
     for day_num in 0..6
-      day = day0 + day_num.day
-      open_positions[day_num] += day_roster_openings(@daily_rosters[day_num], dropped_player_id, day)
+      open_positions[day_num] += day_roster_openings(@daily_rosters[day_num], dropped_player_id, day_num)
     end
-    weekly_position_openings = set_position_open_days_hash(open_positions)
+    @weekly_position_openings = set_position_open_days_hash(open_positions)
   end
 
-  def day_roster_openings(roster, dropped_player_id, day)
-    active_players = @roster.players.select { |player| player.team.games.find_by(date: day) }
-    pos_connections = connections_between_positions(active_players, day)
+  def day_roster_openings(roster, dropped_player_id, day_num)
+    active_players = active_players_each_day[day_num]
+    pos_connections = connections_between_positions(active_players)
     positions_open = check_for_open_roster_slots(roster, dropped_player_id, active_players)
     useable_positions = pos_connections.select { |conn| positions_open
                         .any? { |open_pos| conn.include?(open_pos) } }.flatten.uniq
   end
 
-  def connections_between_positions(active_players, day)
+  def connections_between_positions(active_players)
     pos_connections = []
     (1..7).select { |pos_id| @roster.position_ids.include?(pos_id) }.each do |pos_id|
       unless pos_connections.flatten.include?(pos_id)

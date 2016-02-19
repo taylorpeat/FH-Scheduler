@@ -74,16 +74,71 @@ module ApplicationHelper
     weekly_team_games
   end
 
-  def player_open_games(player, dropped_player_id)
-    player_pos_open_games = []
-    player.position_ids.each do |pos|
-      player_pos_open_games << determine_open_positions(dropped_player_id)[pos]
+  def player_open_games(player)
+    @position_open_games[player.position_ids] & all_teams_games[player.team.id]
+  end
+
+  def set_open_games_per_position(dropped_player_id)
+    pos_open_games = []
+    for pos in 1..7
+      pos_open_games << determine_open_positions(dropped_player_id)[pos]
     end
-    binding.pry
-    player_pos_open_games.flatten.uniq & all_teams_games[player.team.id]
+    combo_open_games = Hash.new([])
+    pos_combos = [[1], [2], [3], [4], [1,2,3,4]] + [1,2,3,4].combination(3).to_a + [1,2,3,4].combination(2).to_a
+    pos_combos.map! do |combo|
+      if combo.include?(5)
+        combo
+      elsif combo.include?(4)
+        combo + [7]
+      else
+        combo + [6,7]
+      end
+    end
+    pos_combos.each do |combo|
+      combo.each do |pos|
+        combo_open_games[combo] += pos_open_games[pos - 1]
+      end
+      combo_open_games[combo].sort!.uniq!
+    end
+    @position_open_games = combo_open_games
   end
 
   def player_games(player)
     all_teams_games[player.team.id]
   end
+
+  def active_players_each_day
+    weeks_active_players = []
+    day0 = changed_week.beginning_of_day
+    for day_num in 0..6
+      day = day0 + day_num.day
+      weeks_active_players << @roster.players.select { |player| player.team.games.find_by(date: day) }
+    end
+    weeks_active_players
+  end
+
+  def players_to_check
+    Player.all.limit(300).reject { |player| @roster.players.include?(player) }
+  end
+
+  def five_game_players
+    players_to_check.select { |player| player_open_games(player).size >= 5 }
+  end
+
+  def four_game_players
+    four_game_players = players_to_check.select { |player| player_open_games(player).size == 4 }
+  end
+
+  def three_game_players
+    three_game_players = players_to_check.select { |player| player_open_games(player).size == 3 }
+  end
+  
+  def two_game_players
+    two_game_players =  players_to_check.select { |player| player_open_games(player).size == 2 }
+  end
+  
+  def one_game_players
+    one_game_players = players_to_check.select { |player| player_open_games(player).size == 1 }
+  end
+
 end

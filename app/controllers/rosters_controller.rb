@@ -7,6 +7,7 @@ class RostersController < ApplicationController
     @week_change = params[:week_change].to_i || 0
     @start_day = (Date.today.beginning_of_week + @week_change.week).beginning_of_day
     @daily_rosters = @roster.set_daily_rosters(@start_day)
+    @players_to_drop = [params[:drop].to_i]
   end
 
   def new
