@@ -65,59 +65,52 @@
   <% end %>
 </table>
 <br>
-<% if @players_to_drop %>
-  <% dropped_players = @players_to_drop.map { |player_id| Player.find(player_id) } %>
-  <% dropped_players.each do |dropped_player| %>
-    <% set_open_games_per_position(dropped_player.id) %>
-    <%= "Dropping: #{dropped_player.name}" %>
-    <hr>
-    <br>
-    <%= "Recommended Adds:" %>
-    <br>
-    <% unless five_game_players.empty? %>
-      <br>
-      <%= "Players with 5+ games:" %>
-      <br>
-      <% five_game_players.slice(0..49).each do |player| %>
-        <%= " #{player.name} - #{player_open_games(player).size} games" %>
-        <br>
+
+<% if @player_to_drop %>
+  <% dropped_player = Player.find(@player_to_drop) %>
+  <% set_open_games_per_position(dropped_player.id) %>
+  <p><%= "Dropping: #{dropped_player.name}" %></P
+  <hr>
+  <p><strong><%= "Recommended Adds:" %></strong></p>
+  <table>
+    <col width="300">
+    <col width="300">
+    <col width="300">
+    <thead>  
+      <tr>
+        <% unless five_game_players.empty? %>
+          <th><%= "Players with 5+ games:"%></th>
+        <% end %>
+        <% unless four_game_players.empty? %>
+        <th><%= "Players with 4 compatible games:" %></th>
+        <% end %>
+        <% unless three_game_players.empty? %>
+        <th><%= "Players with 3 compatible games:" %></th>
+        <% end %>
+        <% unless !five_game_players.empty? || two_game_players.empty? %>
+        <th><%= "Players with 2 compatible games:" %></th>
+        <% end %>
+        <% unless !four_game_players.empty? || one_game_players.empty? %>
+        <th><%= "Players with 1 compatible game:" %></th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% for row_num in 0..49 %>
+        <tr>
+        <% [five_game_players, four_game_players, three_game_players, two_game_players, one_game_players].reject {|players| players.empty? }.slice(0..2).each do |players| %>
+          <% player = players[row_num] %>
+          <% if player %>
+            <td>
+             <%= "#{player.id}: #{player.name} - #{player.positions.select { |pos| (1..5).include?(pos.id) }.map {|pos| pos.name }.join(",")}" %>
+            </td>
+          <% else %>
+            <td></td>
+          <% end %>
+        <% end %>
+        </tr>
       <% end %>
-    <% end %>
-    <% unless four_game_players.empty? %>
-      <br>
-      <%= "Players with 4 games:" %>
-      <br>
-      <% four_game_players.slice(0..49).each do |player| %>
-        <%= " #{player.name} - #{player_open_games(player).size} games" %>
-        <br>
-      <% end %>
-    <% end %>
-    <% unless three_game_players.empty? %>
-      <br>
-      <%= "Players with 3 games:" %>
-      <br>
-      <% three_game_players.slice(0..49).each do |player| %>
-        <%= " #{player.name} - #{player_open_games(player).size} games" %>
-        <br>
-      <% end %>
-    <% end %>
-    <% unless two_game_players.empty? || !four_game_players.empty? %>
-      <br>
-      <%= "Players with 2 games:" %>
-      <br>
-      <% two_game_players.slice(0..49).each do |player| %>
-        <%= " #{player.name} - #{player_open_games(player).size} games" %>
-        <br>
-      <% end %>
-    <% end %>
-    <% unless one_game_players.slice(0..49).empty? || !three_game_players.empty? %>
-      <br>
-      <%= "Players with 1 game:" %>
-      <br>
-      <% one_game_players.each do |player| %>
-        <%= " #{player.name} - #{player_open_games(player).size} games" %>
-        <br>
-      <% end %>
-    <% end %>
-  <% end %>
+    </tbody>
+  </table>
 <% end %>
+<hr>

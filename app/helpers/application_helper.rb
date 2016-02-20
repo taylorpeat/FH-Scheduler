@@ -1,6 +1,7 @@
 module ApplicationHelper
   include PlayerCheckable
   include TeamCheckable
+  PLAYER_LIMIT = 49
 
   def table_time(time)
     time.strftime("%m/%d")
@@ -118,27 +119,33 @@ module ApplicationHelper
   end
 
   def players_to_check
-    Player.all.limit(300).reject { |player| @roster.players.include?(player) }
+    return @players_to_check if @players_to_check
+    @players_to_check = Player.all.limit(300).reject { |player| @roster.players.include?(player) }
   end
 
   def five_game_players
-    players_to_check.select { |player| player_open_games(player).size >= 5 }
+    return @five_game_players if @five_game_players
+    @five_game_players = players_to_check.select { |player| player_open_games(player).size >= 5 }.slice(0..PLAYER_LIMIT)
   end
 
   def four_game_players
-    four_game_players = players_to_check.select { |player| player_open_games(player).size == 4 }
+    return @four_game_players if @four_game_players
+    @four_game_players = players_to_check.select { |player| player_open_games(player).size == 4 }.slice(0..PLAYER_LIMIT)
   end
 
   def three_game_players
-    three_game_players = players_to_check.select { |player| player_open_games(player).size == 3 }
+    return @three_game_players if @three_game_players
+    @three_game_players = players_to_check.select { |player| player_open_games(player).size == 3 }.slice(0..PLAYER_LIMIT)
   end
   
   def two_game_players
-    two_game_players =  players_to_check.select { |player| player_open_games(player).size == 2 }
+    return @two_game_players if @two_game_players
+    @two_game_players =  players_to_check.select { |player| player_open_games(player).size == 2 }.slice(0..PLAYER_LIMIT)
   end
   
   def one_game_players
-    one_game_players = players_to_check.select { |player| player_open_games(player).size == 1 }
+    return @one_game_players if @one_game_players
+    @one_game_players = players_to_check.select { |player| player_open_games(player).size == 1 }.slice(0..PLAYER_LIMIT)
   end
 
 end
