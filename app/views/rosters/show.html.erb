@@ -1,10 +1,10 @@
 <h3><%= @roster.name %></h3>
 <hr>
 <%= link_to "Update roster", edit_roster_path, class: "btn btn-primary"%>
-<%= link_to "Previous Day", roster_path(@roster, day_change: @day_change - 1, week_change: @week_change), class: "btn btn-default" %>
-<%= link_to "Next Day", roster_path(@roster, day_change: @day_change + 1, week_change: @week_change), class: "btn btn-default" %>
-<%= link_to "Last Week", roster_path(@roster, week_change: @week_change - 1, day_change: 0), class: "btn btn-warning" %>
-<%= link_to "Next Week", roster_path(@roster, week_change: @week_change + 1, day_change: 0), class: "btn btn-warning" %>
+<%= link_to "Previous Day", roster_path(@roster, day_change: @day_change - 1, week_change: @week_change, drop: @player_to_drop), class: "btn btn-default" %>
+<%= link_to "Next Day", roster_path(@roster, day_change: @day_change + 1, week_change: @week_change, drop: @player_to_drop), class: "btn btn-default" %>
+<%= link_to "Last Week", roster_path(@roster, week_change: @week_change - 1, day_change: 0, drop: @player_to_drop), class: "btn btn-warning" %>
+<%= link_to "Next Week", roster_path(@roster, week_change: @week_change + 1, day_change: 0, drop: @player_to_drop), class: "btn btn-warning" %>
 <br>
 <br>
 <table class="table table-bordered table-hover make_fixed">
@@ -65,12 +65,21 @@
   <% end %>
 </table>
 <br>
+<div class = "form-group">
+  <%= form_tag roster_path(@roster, week_change: @week_change, day_change: @day_change), method: 'get', enforce_utf8: false do %>
+    <%= label_tag 'Select Player to Drop' %>
+    <br>
+    <%= select_tag "drop", options_from_collection_for_select(@roster.players, "id", "name") %>
+    <%= submit_tag nil, class: "Generate Report" %>
+  <% end %>
+</div>
 
 <% if @player_to_drop %>
-  <% dropped_player = Player.find(@player_to_drop) %>
+  <% dropped_player = @players.find(@player_to_drop) %>
   <% set_open_games_per_position(dropped_player.id) %>
-  <p><%= "Dropping: #{dropped_player.name}" %></P
   <hr>
+  <p><%= "Dropping: #{dropped_player.name}" %></p>
+  <br>
   <p><strong><%= "Recommended Adds:" %></strong></p>
   <table>
     <col width="300">

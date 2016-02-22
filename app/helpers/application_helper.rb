@@ -120,7 +120,7 @@ module ApplicationHelper
 
   def players_to_check
     return @players_to_check if @players_to_check
-    @players_to_check = Player.all.limit(300).reject { |player| @roster.players.include?(player) }
+    @players_to_check = @players.all.limit(300).reject { |player| @roster.players.include?(player) }
   end
 
   def five_game_players
