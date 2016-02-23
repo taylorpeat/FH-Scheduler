@@ -17,4 +17,23 @@ class ApplicationController < ActionController::Base
     # determine which positions are available each day for a week, return hash
     #{today: [c,lw,rw,d], tomorrow: [c]}
   end
+
+  def arrange_roster_ids(roster_ids)
+    roster_ids.map!(&:to_i)
+    ir_players = roster_ids.pop(@roster.positions.select {|pos| pos.id == 9 }.size)
+    roster_ids.sort!
+    ir_players.sort!
+    { "player_ids" => (roster_ids + ir_players).map(&:to_s) }
+  end
+
+  def add_remove_players(player_to_drop, player_to_add)
+    roster_ids = @roster.player_ids
+    binding.pry
+    roster_ids.delete(player_to_drop.to_i)
+    ir_players = roster_ids.pop(@roster.positions.select {|pos| pos.id == 9 }.size)
+    roster_ids += [player_to_add.to_i]
+    roster_ids.sort!
+    ir_players.sort!
+    { "player_ids" => (roster_ids + ir_players).map(&:to_s) }
+  end
 end

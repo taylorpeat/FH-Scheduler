@@ -24,6 +24,14 @@ class Roster < ActiveRecord::Base
     daily_rosters
   end
 
+  def sorted_players
+    roster_ids = self.player_ids
+    ir_players = roster_ids.pop(self.positions.select {|pos| pos.id == 9 }.size)
+    roster_ids.sort!
+    ir_players.sort!
+    (roster_ids + ir_players).map { |player_id| self.players.find(player_id) }
+  end
+
   private
 
     def initialize_hash

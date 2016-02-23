@@ -1,3 +1,4 @@
+<% binding.pry %>
 <h3><%= @roster.name %></h3>
 <hr>
 <%= link_to "Update roster", edit_roster_path, class: "btn btn-primary"%>
@@ -111,7 +112,9 @@
           <% player = players[row_num] %>
           <% if player %>
             <td>
-             <%= "#{player.id}: #{player.name} - #{player.positions.select { |pos| (1..5).include?(pos.id) }.map {|pos| pos.name }.join(",")}" %>
+              <%= link_to roster_path(@roster, week_change: @week_change, day_change: @day_change, drop: @player_to_drop, add: player.id), class: "btn btn-default", method: :put do %>
+                <%= "#{player.id}: #{player.name} - #{player.positions.select { |pos| (1..5).include?(pos.id) }.map {|pos| pos.name }.join(",")}" %>
+              <% end %>
             </td>
           <% else %>
             <td></td>

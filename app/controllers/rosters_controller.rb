@@ -46,12 +46,21 @@ class RostersController < ApplicationController
   end
 
   def update
-    if @roster.update(roster_params)
-      flash[:success] = "Your roster has been updated."
+    binding.pry
+    if params[:player_ids]
+      if @roster.update(arrange_roster_ids(roster_params["player_ids"]))
+        @roster.players.arrange_roster_ids
+        flash[:success] = "Your roster has been updated."
+      end
+    elsif params[:drop] 
+      if @roster.update(add_remove_players(params[:drop], params[:add]))
+        @roster.players.arrange_roster_ids
+        flash[:success] = "Your roster has been updated."
+      end
     else
       flash[:notice] = "Your roster could not be updated."
     end
-    redirect_to roster_path(@roster)
+    redirect_to roster_path(@roster, week_change: params[:week_change], day_change: params[:day_change])
   end
 
   def add_slot
