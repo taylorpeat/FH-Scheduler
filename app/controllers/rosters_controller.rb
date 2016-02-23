@@ -42,19 +42,17 @@ class RostersController < ApplicationController
 
   def edit
     @roster = Roster.find(params[:id])
-    @players = Player.all
+    @players = Player.all - [Player.find(0)]
   end
 
   def update
-    binding.pry
-    if params[:player_ids]
+    if params[:drop] && params[:add]
+      params[:roster] = add_remove_players(params[:drop], params[:add])
+    end
+    if params[:roster]
       if @roster.update(arrange_roster_ids(roster_params["player_ids"]))
-        @roster.players.arrange_roster_ids
-        flash[:success] = "Your roster has been updated."
-      end
-    elsif params[:drop] 
-      if @roster.update(add_remove_players(params[:drop], params[:add]))
-        @roster.players.arrange_roster_ids
+        @roster.players.clear
+        @roster.update(arrange_roster_ids(roster_params["player_ids"]))
         flash[:success] = "Your roster has been updated."
       end
     else

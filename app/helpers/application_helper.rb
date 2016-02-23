@@ -47,6 +47,14 @@ module ApplicationHelper
     end
   end
 
+  def beginning_of_week?
+    changed_date == changed_week
+  end
+
+  def end_of_week?
+    changed_date == changed_week.end_of_week + 1.week
+  end
+
   def changed_week
     Date.today.beginning_of_week + @week_change.week
   end
@@ -120,7 +128,7 @@ module ApplicationHelper
 
   def players_to_check
     return @players_to_check if @players_to_check
-    @players_to_check = @players.all.limit(300).reject { |player| @roster.players.include?(player) }
+    @players_to_check = @players.all.limit(300).reject { |player| @roster.players.include?(player) || player.id == 0 }
   end
 
   def five_game_players
@@ -146,6 +154,19 @@ module ApplicationHelper
   def one_game_players
     return @one_game_players if @one_game_players
     @one_game_players = players_to_check.select { |player| player_open_games(player).size == 1 }.slice(0..PLAYER_LIMIT)
+  end
+
+  def droppable_players
+    non_ir_players = @roster.players.take(@roster.player_max - ir_slot_count)
+    empty_slots? ? non_ir_players.unshift(Player.find(0)) : non_ir_players
+  end
+
+  def empty_slots?
+    @roster.players.size < (@roster.player_max - ir_slot_count)
+  end
+
+  def formatted_datetime(day)
+    day.strftime('%a, %b %d')
   end
 
 end

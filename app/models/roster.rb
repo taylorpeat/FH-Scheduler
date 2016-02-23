@@ -9,6 +9,7 @@ class Roster < ActiveRecord::Base
   attr_accessor :conflicts
 
   def hash(roster_day)
+    return roster_hash if @day == roster_day
     @day = roster_day
     @conflicts = []
     initialize_hash
@@ -24,14 +25,6 @@ class Roster < ActiveRecord::Base
     daily_rosters
   end
 
-  def sorted_players
-    roster_ids = self.player_ids
-    ir_players = roster_ids.pop(self.positions.select {|pos| pos.id == 9 }.size)
-    roster_ids.sort!
-    ir_players.sort!
-    (roster_ids + ir_players).map { |player_id| self.players.find(player_id) }
-  end
-
   private
 
     def initialize_hash
@@ -42,12 +35,10 @@ class Roster < ActiveRecord::Base
     end
 
     def assign_all_players
-      non_ir_player_size = self.players.count - self.positions.select { |pos| pos.id == 9 }.size
-      non_ir_player_size = 0 if non_ir_player_size < 0
+      non_ir_player_size = self.player_max - self.positions.select { |pos| pos.id == 9 }.size
       assign_ir_players(non_ir_player_size)
       self.players.take(non_ir_player_size).sort.each do |player|
         assign_single_player(player)
-
       end
     end
 
