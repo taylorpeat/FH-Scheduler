@@ -2,6 +2,7 @@ module ApplicationHelper
   include PlayerCheckable
   include TeamCheckable
   PLAYER_LIMIT = 49
+  ROSTER_DEFAULTS = {C: 2, LW: 2, RW: 2, D: 4, G: 2, F: 0, U: 0, BN: 4, IR: 0}
 
   def table_time(time)
     time.strftime("%m/%d")
@@ -169,11 +170,15 @@ module ApplicationHelper
   end
 
   def empty_slots?
-    @roster.players.size < (@roster.player_max - ir_slot_count)
+    @roster.players.size < (@roster.player_max - ir_slot_count) || @roster.players.size == 0
   end
 
   def formatted_datetime(day)
     day.strftime('%a, %b %d')
+  end
+
+  def default_value(position, symbol)
+    @roster.positions.empty? ? ROSTER_DEFAULTS[symbol] : @roster.positions.select { |pos| pos.id == position.id }.count
   end
 
 end

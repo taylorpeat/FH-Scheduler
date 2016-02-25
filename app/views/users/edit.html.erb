@@ -1,0 +1,3 @@
+<%= render 'shared/content_title', title: "Edit #{current_user.username.titleize || Guest}" %>
+
+<%= render 'user_form', submit_button_text: "Update User", go_to_action: 'users', form_method: 'post' %>

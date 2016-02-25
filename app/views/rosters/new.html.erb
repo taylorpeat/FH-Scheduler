@@ -1,3 +1,14 @@
 <%= render 'shared/content_title', title: "Create a new roster" %>
 <%= render 'shared/errors', error_object: @roster %>
+
+<ul class="nav nav-tabs">
+  <li class=<%= params[:tab] ? "" : "active" %>>
+    <%= link_to "Set Positions", new_roster_path %>
+  </li>
+  <li class="disabled">
+    <%= link_to "Edit Players", '#' %>
+  </li>
+</ul>
+<br>
+
 <%= render 'roster_positions', submit_wording: "Create Roster", link_path: rosters_path %>

@@ -1,11 +1,11 @@
 <h3><%= @roster.name %></h3>
 <hr>
 <ul class="nav nav-tabs">
-  <li class=<%= params[:tab] ? "" : "active" %>>
-    <%= link_to "Edit Players", edit_roster_path(@roster) %>
-  </li>
   <li class=<%= params[:tab] ? "active" : "" %>>
     <%= link_to "Edit Positions", edit_roster_path(@roster, tab: "positions") %>
+  </li>
+  <li class=<%= params[:tab] ? "" : "active" %>>
+    <%= link_to "Edit Players", edit_roster_path(@roster) %>
   </li>
 </ul>
 <br>

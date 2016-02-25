@@ -1,6 +1,6 @@
 class RostersController < ApplicationController
 
-  before_action :set_roster, only: [:show, :edit, :update, :add_slot]
+  before_action :set_roster, only: [:show, :edit, :update, :add_slot, :destroy]
 
   def show
     @day_change = params[:day_change].to_i || 0
@@ -16,7 +16,12 @@ class RostersController < ApplicationController
   end
 
   def create
-    set_roster_positions
+    if params[:id]
+      set_roster
+      redirect_to set_roster_positions ? roster_path(@roster) : edit_roster_path(@roster, tab: "positions")
+    else
+      redirect_to set_roster_positions ? edit_roster_path(@roster) : new_roster_path
+    end
   end
 
   def index
@@ -44,6 +49,16 @@ class RostersController < ApplicationController
     redirect_to roster_path(@roster, week_change: params[:week_change], day_change: params[:day_change])
   end
 
+  def destroy
+    name = @roster.name
+    if @roster.delete
+      flash[:success] = "#{name} was deleted."
+    else
+      flash[:error] = "#{name} could not be deleted."
+    end
+    redirect_to rosters_path
+  end
+
   def add_slot
     if @roster.update(player_max: @roster.player_max + 1)
        flash[:success] = "Your roster has been updated."
@@ -51,6 +66,11 @@ class RostersController < ApplicationController
        flash[:notice] = "Your roster could not be updated."
     end
     redirect_to edit_roster_path(@roster)
+  end
+
+  def show_teams
+    @teams = Team.all
+    @week_change = params[:week_change].to_i || 0
   end
 
   private
@@ -67,32 +87,32 @@ class RostersController < ApplicationController
     end
 
     def set_roster_positions
-      position_arr = {1 => params[:c].to_i, 2 => params[:lw].to_i, 3 => params[:rw].to_i, 4 => params[:d].to_i,
-                 6 => params[:f].to_i, 7 => params[:u].to_i, 5 => params[:g].to_i, 8 => params[:bn].to_i,
-                 9 => params[:ir].to_i}
-    @roster = @roster || Roster.new
-    @roster.user_id = @roster.user_id || current_user.id
-    @roster.name = params[:team_name]
-    @roster.player_max = position_arr.values.sum
-    dropped_players = []
-    if @roster.player_max < @roster.players.count
-      dropped_players = @roster.players.delete(@roster.players.last(@roster.players.count - @roster.player_max))
-    end
-    @roster.position_rosters.clear if @roster.position_rosters
-    position_arr.each do |pos, num|
-      num.to_i.times do
-        roster_postition = @roster.position_rosters.new(position_id: pos)
+      position_arr = {1 => params[:C].to_i, 2 => params[:LW].to_i, 3 => params[:RW].to_i, 4 => params[:D].to_i,
+                 6 => params[:F].to_i, 7 => params[:U].to_i, 5 => params[:G].to_i, 8 => params[:BN].to_i,
+                 9 => params[:IR].to_i}
+      @roster = @roster || Roster.new
+      @roster.user_id = @roster.user_id || current_user.id
+      @roster.name = params[:team_name]
+      @roster.player_max = position_arr.values.sum
+      dropped_players = []
+      if @roster.player_max < @roster.players.count
+        dropped_players = @roster.players.delete(@roster.players.last(@roster.players.count - @roster.player_max))
       end
-    end
-    if @roster.save
-      flash[:success] = "Roster created."
-      unless dropped_players.empty?
-        flash[:warning] = "#{dropped_players.map { |player| player.name }.join(", ")} #{"has".pluralize(dropped_players.size)} been removed from the roster due to the reduced positions."
+      @roster.position_rosters.clear if @roster.position_rosters
+      position_arr.each do |pos, num|
+        num.to_i.times do
+          roster_postition = @roster.position_rosters.new(position_id: pos)
+        end
       end
-    else
-      flash[:error] = "Roster could not be created."
-    end
-    redirect_to roster_path(@roster)
+      if @roster.save
+        unless dropped_players.empty?
+          flash[:warning] = "#{dropped_players.map { |player| player.name }.join(", ")} #{"has".pluralize(dropped_players.size)} been removed from the roster due to the reduced positions."
+        end
+        return true
+      else
+        flash[:error] = "Roster could not be created."
+        return false
+      end
     end
 end
 

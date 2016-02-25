@@ -1,86 +1,27 @@
-<div class='well'>
+<div class='well col-md-10'>
   <%= form_tag link_path, class: "form-horizontal" do %>
   <div class="form-group">
     <div class="col-xs-2 text-right">
       <%= label_tag :team_name, "Team Name" %> 
     </div>
     <div class="col-xs-3">
-        <%= text_field_tag :team_name, nil, class: "form-control", placeholder: "Team Name" %>
+        <%= text_field_tag :team_name, nil, class: "form-control", placeholder: "Team Name", value: @roster.name %>
     </div>
   </div>
-    <hr>
-  <div class="form-group"> 
-  <div class="col-xs-2 text-right">
-      <%= label_tag :c, "C"%>
+  <hr>
+
+  <% Position.all.each do |position| %>
+    <% symbol = position.name.to_sym %>
+    <div class="form-group"> 
+      <div class="col-xs-2 text-right">
+        <%= label_tag symbol, position.name %>
+      </div>
+      <div class="col-xs-2">
+        <%= number_field_tag symbol, default_value(position, symbol), min: 0, max: 10, class: "form-control" %>
+      </div>
     </div>
-    <div class="col-xs-2">
-      <%= number_field_tag :c, 2, min: 0, max: 5, class: "form-control" %>
-    </div>
-  </div>
-  <div class="form-group"> 
-    <div class="col-xs-2 text-right">
-      <%= label_tag :lw, "LW"%>
-    </div>
-    <div class="col-xs-2">
-      <%= number_field_tag :lw, 2, min: 0, max: 5, class: "form-control" %>
-    </div>
-  </div>
-  <div class="form-group"> 
-    <div class="col-xs-2 text-right">
-      <%= label_tag :rw, "RW"%>
-    </div>
-    <div class="col-xs-2">
-      <%= number_field_tag :rw, 2, min: 0, max: 5, class: "form-control" %>
-    </div>
-  </div>
-  <div class="form-group"> 
-    <div class="col-xs-2 text-right">
-      <%= label_tag :d, "D"%>
-    </div>
-    <div class="col-xs-2">
-      <%= number_field_tag :d, 4, min: 0, max: 8, class: "form-control" %>
-    </div>
-  </div>
-  <div class="form-group"> 
-    <div class="col-xs-2 text-right">
-      <%= label_tag :f, "Forward"%>
-    </div>
-    <div class="col-xs-2">
-      <%= number_field_tag :f, 0, min: 0, max: 5, class: "form-control" %>
-    </div>
-  </div>
-  <div class="form-group"> 
-    <div class="col-xs-2 text-right">
-      <%= label_tag :u, "Util"%>
-    </div>
-    <div class="col-xs-2">
-      <%= number_field_tag :u, 0, min: 0, max: 5, class: "form-control" %>
-    </div>
-  </div>
-  <div class="form-group"> 
-    <div class="col-xs-2 text-right">
-      <%= label_tag :g, "G"%>
-    </div>
-    <div class="col-xs-2">
-      <%= number_field_tag :g, 2, min: 0, max: 5, class: "form-control" %>
-    </div>
-  </div>
-  <div class="form-group"> 
-    <div class="col-xs-2 text-right">
-      <%= label_tag :bn, "BN"%>
-    </div>
-    <div class="col-xs-2">
-      <%= number_field_tag :bn, 4, min: 0, max: 10, class: "form-control" %>
-    </div>
-  </div>
-  <div class="form-group"> 
-    <div class="col-xs-2 text-right">
-      <%= label_tag :ir, "IR"%>
-    </div>
-    <div class="col-xs-2">
-      <%= number_field_tag :ir, 1, min: 0, max: 5, class: "form-control" %>
-    </div>
-  </div>
+  <% end %>
+
   <hr>
   <div class="form-group"> 
     <div class="col-md-offset-2">

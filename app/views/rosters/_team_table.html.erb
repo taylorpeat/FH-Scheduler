@@ -1,0 +1,17 @@
+<table class="table table-bordered table-hover make_fixed">
+  <thead>
+    <tr>
+      <th>Team</th>
+      <% for i in 0..13 %>
+        <th><%= table_time(changed_week + i.day) %></th>
+        <% if [6,13].include?(i) %>
+          <th bgcolor="#FFEBCD"><%= "Games" %></th>
+        <% end %>
+      <% end %>
+    </tr>
+  </thead>
+  <% team_group.each do |team| %>
+    <%= render 'team_table_section', team: team %>
+  <% end %>
+</table>
+<br>
