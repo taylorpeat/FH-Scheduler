@@ -16,24 +16,7 @@ class RostersController < ApplicationController
   end
 
   def create
-    position_arr = {1 => params[:c].to_i, 2 => params[:lw].to_i, 3 => params[:rw].to_i, 4 => params[:d].to_i,
-                 6 => params[:f].to_i, 7 => params[:u].to_i, 5 => params[:g].to_i, 8 => params[:bn].to_i,
-                 9 => params[:ir].to_i}
-    @roster = Roster.new
-    @roster.user_id = current_user.id
-    @roster.name = params[:team_name]
-    @roster.player_max = position_arr.values.sum
-    position_arr.each do |pos, num|
-      num.to_i.times do
-        roster_postition = @roster.position_rosters.new(position_id: pos)
-      end
-    end
-    if @roster.save
-      flash[:success] = "Roster created."
-    else
-      flash[:error] = "Roster could not be created."
-    end
-    redirect_to rosters_path
+    set_roster_positions
   end
 
   def index
@@ -62,7 +45,6 @@ class RostersController < ApplicationController
   end
 
   def add_slot
-    binding.pry
     if @roster.update(player_max: @roster.player_max + 1)
        flash[:success] = "Your roster has been updated."
     else
@@ -82,6 +64,35 @@ class RostersController < ApplicationController
 
     def set_roster
       @roster = Roster.find(params[:id])
+    end
+
+    def set_roster_positions
+      position_arr = {1 => params[:c].to_i, 2 => params[:lw].to_i, 3 => params[:rw].to_i, 4 => params[:d].to_i,
+                 6 => params[:f].to_i, 7 => params[:u].to_i, 5 => params[:g].to_i, 8 => params[:bn].to_i,
+                 9 => params[:ir].to_i}
+    @roster = @roster || Roster.new
+    @roster.user_id = @roster.user_id || current_user.id
+    @roster.name = params[:team_name]
+    @roster.player_max = position_arr.values.sum
+    dropped_players = []
+    if @roster.player_max < @roster.players.count
+      dropped_players = @roster.players.delete(@roster.players.last(@roster.players.count - @roster.player_max))
+    end
+    @roster.position_rosters.clear if @roster.position_rosters
+    position_arr.each do |pos, num|
+      num.to_i.times do
+        roster_postition = @roster.position_rosters.new(position_id: pos)
+      end
+    end
+    if @roster.save
+      flash[:success] = "Roster created."
+      unless dropped_players.empty?
+        flash[:warning] = "#{dropped_players.map { |player| player.name }.join(", ")} #{"has".pluralize(dropped_players.size)} been removed from the roster due to the reduced positions."
+      end
+    else
+      flash[:error] = "Roster could not be created."
+    end
+    redirect_to roster_path(@roster)
     end
 end
 

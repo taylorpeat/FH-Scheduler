@@ -32,6 +32,8 @@ class Roster < ActiveRecord::Base
       self.positions.each do |position|
         roster_hash[position.id] += [""]
       end
+      roster_hash[8] = [] if roster_hash[8].empty?
+      roster_hash
     end
 
     def assign_all_players

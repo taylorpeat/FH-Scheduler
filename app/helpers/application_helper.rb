@@ -28,7 +28,7 @@ module ApplicationHelper
   end
 
   def ir_slot_count
-    @roster.positions.select { |pos| pos == 9 }.size
+    @roster.positions.select { |pos| pos.id == 9 }.size
   end
 
   def highlight?(some_day, conflict_status)
@@ -93,16 +93,19 @@ module ApplicationHelper
       pos_open_games << determine_open_positions(dropped_player_id)[pos]
     end
     combo_open_games = Hash.new([])
-    pos_combos = [[1], [2], [3], [4], [1,2,3,4]] + [1,2,3,4].combination(3).to_a + [1,2,3,4].combination(2).to_a
-    pos_combos.map! do |combo|
-      if combo.include?(5)
-        combo
-      elsif combo.include?(4)
-        combo + [7]
-      else
-        combo + [6,7]
-      end
-    end
+    pos_combos = [[2, 3, 6, 7],
+                  [1, 6, 7],
+                  [1, 3, 6, 7],
+                  [2, 6, 7],
+                  [5],
+                  [3, 6, 7],
+                  [4, 7],
+                  [1, 2, 3, 6, 7],
+                  [1, 2, 6, 7],
+                  [3, 4, 6, 7],
+                  [2, 4, 6, 7],
+                  [2, 4, 3, 6, 7],
+                  [1, 4, 6, 7]]
     pos_combos.each do |combo|
       combo.each do |pos|
         combo_open_games[combo] += pos_open_games[pos - 1]
@@ -128,7 +131,7 @@ module ApplicationHelper
 
   def players_to_check
     return @players_to_check if @players_to_check
-    @players_to_check = @players.all.limit(300).reject { |player| @roster.players.include?(player) || player.id == 0 }
+    @players_to_check = @players.all.limit(300) - @roster.players - [Player.find(0)]
   end
 
   def five_game_players
@@ -138,26 +141,30 @@ module ApplicationHelper
 
   def four_game_players
     return @four_game_players if @four_game_players
-    @four_game_players = players_to_check.select { |player| player_open_games(player).size == 4 }.slice(0..PLAYER_LIMIT)
+    @four_game_players = (players_to_check - @five_game_players)
+                         .select { |player| player_open_games(player).size == 4 }.slice(0..PLAYER_LIMIT)
   end
 
   def three_game_players
     return @three_game_players if @three_game_players
-    @three_game_players = players_to_check.select { |player| player_open_games(player).size == 3 }.slice(0..PLAYER_LIMIT)
+    @three_game_players = (players_to_check - @five_game_players - @four_game_players)
+                          .select { |player| player_open_games(player).size == 3 }.slice(0..PLAYER_LIMIT)
   end
   
   def two_game_players
     return @two_game_players if @two_game_players
-    @two_game_players =  players_to_check.select { |player| player_open_games(player).size == 2 }.slice(0..PLAYER_LIMIT)
+    @two_game_players =  (players_to_check - @five_game_players - @four_game_players - @three_game_players)
+                         .select { |player| player_open_games(player).size == 2 }.slice(0..PLAYER_LIMIT)
   end
   
   def one_game_players
     return @one_game_players if @one_game_players
-    @one_game_players = players_to_check.select { |player| player_open_games(player).size == 1 }.slice(0..PLAYER_LIMIT)
+    @one_game_players = (players_to_check - @five_game_players - @four_game_players - @three_game_players - @two_game_players)
+                        .select { |player| player_open_games(player).size == 1 }.slice(0..PLAYER_LIMIT)
   end
 
   def droppable_players
-    non_ir_players = @roster.players.take(@roster.player_max - ir_slot_count)
+    non_ir_players = @roster.players.take(@roster.player_max - ir_slot_count).reverse
     empty_slots? ? non_ir_players.unshift(Player.find(0)) : non_ir_players
   end
 

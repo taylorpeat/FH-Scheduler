@@ -1,27 +1,17 @@
 <h3><%= @roster.name %></h3>
 <hr>
+<ul class="nav nav-tabs">
+  <li class=<%= params[:tab] ? "" : "active" %>>
+    <%= link_to "Edit Players", edit_roster_path(@roster) %>
+  </li>
+  <li class=<%= params[:tab] ? "active" : "" %>>
+    <%= link_to "Edit Positions", edit_roster_path(@roster, tab: "positions") %>
+  </li>
+</ul>
+<br>
 
-<%= form_for @roster, method: "patch" do |f| %>
-  <table class="table table-bordered table-hover">
-    <tr>
-      <th>Roster Slot</th>
-      <th>Player</th>
-    </tr>
-    <% for i in 1..@roster.player_max %>
-      <tr>
-        <td>
-          <%= "Slot #{i}" %>
-          <% if i >= (@roster.player_max - ir_slot_count) %>
-            <b><%= " - IR Player Only" %></b>
-          <% end %>
-        </td>
-        <td>
-          <%= f.collection_select :player_ids, @players, :id, :name_for_select, {include_blank: 'None', selected: @roster.player_ids[i - 1] }, { name: "roster[player_ids][]" } %>
-        </td>
-      </tr>
-    <% end %>
-  </table>
-  <%= link_to "Add another roster slot", add_slot_roster_path(@roster), class: "btn btn-default", method: 'post' %>
-
-  <%= f.submit "Update roster", class: "btn btn-primary"%>
+<% if params[:tab] == "positions" %>
+  <%= render 'roster_positions', submit_wording: "Update Roster Positions", link_path: roster_path(@roster) %>
+<% else %>
+  <%= render 'edit_players' %>
 <% end %>

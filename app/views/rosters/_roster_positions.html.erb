@@ -1,0 +1,93 @@
+<div class='well'>
+  <%= form_tag link_path, class: "form-horizontal" do %>
+  <div class="form-group">
+    <div class="col-xs-2 text-right">
+      <%= label_tag :team_name, "Team Name" %> 
+    </div>
+    <div class="col-xs-3">
+        <%= text_field_tag :team_name, nil, class: "form-control", placeholder: "Team Name" %>
+    </div>
+  </div>
+    <hr>
+  <div class="form-group"> 
+  <div class="col-xs-2 text-right">
+      <%= label_tag :c, "C"%>
+    </div>
+    <div class="col-xs-2">
+      <%= number_field_tag :c, 2, min: 0, max: 5, class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group"> 
+    <div class="col-xs-2 text-right">
+      <%= label_tag :lw, "LW"%>
+    </div>
+    <div class="col-xs-2">
+      <%= number_field_tag :lw, 2, min: 0, max: 5, class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group"> 
+    <div class="col-xs-2 text-right">
+      <%= label_tag :rw, "RW"%>
+    </div>
+    <div class="col-xs-2">
+      <%= number_field_tag :rw, 2, min: 0, max: 5, class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group"> 
+    <div class="col-xs-2 text-right">
+      <%= label_tag :d, "D"%>
+    </div>
+    <div class="col-xs-2">
+      <%= number_field_tag :d, 4, min: 0, max: 8, class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group"> 
+    <div class="col-xs-2 text-right">
+      <%= label_tag :f, "Forward"%>
+    </div>
+    <div class="col-xs-2">
+      <%= number_field_tag :f, 0, min: 0, max: 5, class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group"> 
+    <div class="col-xs-2 text-right">
+      <%= label_tag :u, "Util"%>
+    </div>
+    <div class="col-xs-2">
+      <%= number_field_tag :u, 0, min: 0, max: 5, class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group"> 
+    <div class="col-xs-2 text-right">
+      <%= label_tag :g, "G"%>
+    </div>
+    <div class="col-xs-2">
+      <%= number_field_tag :g, 2, min: 0, max: 5, class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group"> 
+    <div class="col-xs-2 text-right">
+      <%= label_tag :bn, "BN"%>
+    </div>
+    <div class="col-xs-2">
+      <%= number_field_tag :bn, 4, min: 0, max: 10, class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group"> 
+    <div class="col-xs-2 text-right">
+      <%= label_tag :ir, "IR"%>
+    </div>
+    <div class="col-xs-2">
+      <%= number_field_tag :ir, 1, min: 0, max: 5, class: "form-control" %>
+    </div>
+  </div>
+  <hr>
+  <div class="form-group"> 
+    <div class="col-md-offset-2">
+      <div class="col-md-10">
+        <%= submit_tag submit_wording, value: submit_wording, class: 'btn btn-primary' %>
+      </div>
+    </div>
+  </div>
+  <% end %>
+</div>

@@ -47,7 +47,8 @@ module PlayerCheckable
   def check_for_open_roster_slots(roster, dropped_player_id, active_players)
     open_positions = []
     roster.select { |pos_id, players| ![8,9].include?(pos_id) }.each do |pos_id, players|
-      if players.any? { |player_id| !active_players.include?(@roster.players.find(player_id)) ||
+      if players.any? { |player_id| player_id == "" ||
+                                    !active_players.include?(@roster.players.find(player_id)) ||
                                     player_id == dropped_player_id &&
                                     !active_players.select { |player| roster[8].include?(player_id) } &&
                                     !active_players.select { |player| roster[8].include?(player_id) }
