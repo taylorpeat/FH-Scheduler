@@ -19,8 +19,9 @@ class UsersController < ApplicationController
       else
         flash[:success] = "User has been created."
       end
-      redirect_to root_path
+      redirect_to rosters_path
     else
+      flash[:error] = "User could not be created."
       render 'new'
     end
   end

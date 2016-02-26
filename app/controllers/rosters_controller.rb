@@ -37,11 +37,15 @@ class RostersController < ApplicationController
     if params[:drop] && params[:add]
       params[:roster] = add_remove_players(params[:drop], params[:add])
     end
+    players_added = params[:roster]["player_ids"]
+    duplicates = players_added.select { |id| players_added.count(id) > 1 && id != "" }.uniq
+    binding.pry
     if params[:roster]
       if @roster.update(arrange_roster_ids(roster_params["player_ids"]))
         @roster.players.clear
         @roster.update(arrange_roster_ids(roster_params["player_ids"]))
         flash[:success] = "Your roster has been updated."
+        flash[:warning] = "#{duplicates.map {|x| Player.find(x.to_i).name }.join(", ")} were duplicated and only added once." if duplicates
       end
     else
       flash[:notice] = "Your roster could not be updated."

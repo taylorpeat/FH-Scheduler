@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
     end
     roster_ids.sort!.delete(0)
     ir_players.sort!.delete(0)
-    { "player_ids" => (roster_ids + ir_players).map(&:to_s) }
+    { "player_ids" => (roster_ids + ir_players).map(&:to_s).uniq }
   end
 
   def add_remove_players(player_to_drop, player_to_add)

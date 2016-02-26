@@ -1,4 +1,8 @@
 <h3><%= @roster.name %></h3>
+<%= link_to roster_path(@roster) do %>
+  <i class="glyphicon glyphicon-arrow-left"></i>
+  <span>Return to Roster Page</span>
+<% end %>
 <hr>
 <ul class="nav nav-tabs">
   <li class=<%= params[:tab] ? "active" : "" %>>

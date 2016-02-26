@@ -2,7 +2,7 @@ class Roster < ActiveRecord::Base
   belongs_to :user
   has_many :position_rosters
   has_many :positions, through: :position_rosters
-  has_many :player_rosters
+  has_many :player_rosters, dependent: :destroy
   has_many :players, through: :player_rosters
 
   attr_reader :roster_hash, :day
