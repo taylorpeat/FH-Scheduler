@@ -34,9 +34,9 @@ module ApplicationHelper
 
   def highlight?(some_day, conflict_status)
     if conflict_status
-      "<td bgcolor = '#FFFF66'>"
+      "<td class='conflict-col'>"
     else
-      changed_date == some_day ? "<td bgcolor = '#e5e5ff'>" : "<td>"
+      changed_date == some_day ? "<td class='current-day-col'>" : "<td>"
     end
   end
 

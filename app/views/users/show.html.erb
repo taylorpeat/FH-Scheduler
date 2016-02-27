@@ -1,0 +1,14 @@
+<%= render 'shared/content_title', title: "#{@user.username.titleize}'s Profile" %>
+
+<div class="well">
+  <div style="overflow: hidden;">
+    <p><strong>Username: </strong><%= " #{@user.username.titleize}" %></p>
+    <br>
+    <p class="roster-list-height"><strong>Roster List:</strong> <%= "#{@user.rosters.first.name}" %></p>
+    <% @user.rosters.select { |roster| roster != @user.rosters.first }.each do |roster| %>
+      <p class="roster-list roster-list-height"><%= "#{roster.name}" %></p>
+    <% end %>
+  </div>
+</div>
+
+<%= link_to "Edit User", edit_user_path(@user) %>

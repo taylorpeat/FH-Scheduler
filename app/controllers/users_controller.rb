@@ -1,5 +1,7 @@
 class UsersController < ApplicationController
 
+  before_action :set_user, only: [:show, :edit, :update]
+
   def welcome
     @welcome = true
   end
@@ -7,6 +9,12 @@ class UsersController < ApplicationController
   def new
     @welcome = true
     @user = User.new
+  end
+
+  def show
+  end
+
+  def edit
   end
 
   def create
@@ -26,10 +34,23 @@ class UsersController < ApplicationController
     end
   end
 
+  def update
+    if @user.update(user_params)
+      flash[:success] = "User has been updated."
+      redirect_to user_path(@user) and return
+    else
+      flash[:error] = "User could not be updated."
+      redirect_to edit_user_path(@user) and return
+    end
+  end
 
   private
 
     def user_params
       params.require(:user).permit(:username, :password)
+    end
+
+    def set_user
+      @user = current_user
     end
 end

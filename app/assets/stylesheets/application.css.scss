@@ -24,3 +24,37 @@
 .panel-hockey {
   overflow-x: scroll;
 }
+
+.roster-list {
+  text-indent: 80px;
+}
+
+.roster-list-height {
+  line-height: 50%;
+}
+
+.headcol {
+  position:absolute;
+  width:5em;
+  left:0;
+  top:auto;
+  border-right: 0px none black;
+  border-top-width:3px; /*only relevant for first row*/
+  margin-top:-3px; /*compensate for top border*/
+}
+
+.games-col {
+ bgcolor: "#FFEBCD";
+}
+
+.starts-col {
+ bgcolor: "#FFF8DC"; 
+}
+
+.current-day-col {
+  bgcolor: "#e5e5ff";
+}
+
+.conflict-col {
+  bgcolor: "#FFFF66";
+}

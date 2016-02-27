@@ -36,7 +36,7 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><%= current_user.username || "Guest" %> <span class="caret"></span></a>
           <% if current_user && current_user.username %>
             <ul class="dropdown-menu">
-              <li><a href='#'>Edit User</a></li>
+              <li><a href=<%= edit_user_path(current_user) %>>Edit User</a></li>
               <li><a href=<%= logout_path %>>Log Out</a></li>
             </ul>
           <% else %>

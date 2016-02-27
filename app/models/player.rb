@@ -12,4 +12,5 @@ class Player < ActiveRecord::Base
   def name_for_select
     "#{name}: ##{ranking} - #{team.name.upcase}"
   end
+  
 end

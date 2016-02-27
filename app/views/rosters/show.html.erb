@@ -61,16 +61,16 @@
       <th>Forwards/Defenseman<span style="color:#FFFFFF">____________</span></th>
       <% for i in 0..13 %>
         <% if changed_date == (changed_week + i.day) %>
-          <th bgcolor="#e5e5ff">
+          <th class="current-day-col">
         <% else %>
           <th>
         <% end %>
           <%= link_to table_time(changed_week + i.day), roster_path(@roster, day_change: initial_time_offset + i, week_change: @week_change, drop: @player_to_drop) %>
         </th>
         <% if [6,13].include?(i) %>
-          <th bgcolor="#FFEBCD"><%= "Games" %></th>
-          <th bgcolor="#FFF8DC"><%= "Starts" %></th>
-          <th bgcolor="#FFEBCD"><%= "Conflicts" %></th>
+          <th class="games-col"><%= "Games" %></th>
+          <th class="starts-col"><%= "Starts" %></th>
+          <th class="games-col"><%= "Conflicts" %></th>
         <% end %>
       <% end %>
     </tr>
@@ -87,9 +87,9 @@
         <%= raw highlight?(changed_week + i.day, false) %><%= @day_totals[i] %></td>
         <% if i == 6 || i == 13 %>
           <% i == 6 ? w = 0 : w = 1 %>
-          <td bgcolor="#FFEBCD"><%= @week_games[w] %></td>
-          <td bgcolor="#FFF8DC"><%= @week_starts[w] %></td>
-          <td bgcolor="#FFEBCD">-</td>
+          <td class="games-col"><%= @week_games[w] %></td>
+          <td class="starts-col"><%= @week_starts[w] %></td>
+          <td class="games-col">-</td>
         <% end %>
       <% end %>
     </tr>
@@ -116,9 +116,9 @@
           <%= link_to table_time(changed_week + i.day), roster_path(@roster, day_change: initial_time_offset + i, week_change: @week_change, drop: @player_to_drop) %>
         </th>
         <% if [6,13].include?(i) %>
-          <th bgcolor="#FFEBCD"><%= "Games" %></th>
-          <th bgcolor="#FFF8DC"><%= "Starts" %></th>
-          <th bgcolor="#FFEBCD"><%= "Conflicts" %></th>
+          <th class="games-col"><%= "Games" %></th>
+          <th class="starts-col"><%= "Starts" %></th>
+          <th class="games-col"><%= "Conflicts" %></th>
         <% end %>
       <% end %>
     </tr>
@@ -139,9 +139,9 @@
         <%= raw highlight?(changed_week + i.day, false) %><%= @day_totals[i] %></td>
         <% if i == 6 || i == 13 %>
           <% i == 6 ? w = 0 : w = 1 %>
-          <td bgcolor="#FFEBCD"><%= @week_games[w] %></td>
-          <td bgcolor="#FFF8DC"><%= @week_starts[w] %></td>
-          <td bgcolor="#FFEBCD">-</td>
+          <td class="games-col"><%= @week_games[w] %></td>
+          <td class="starts-col"><%= @week_starts[w] %></td>
+          <td class="games-col">-</td>
         <% end %>
       <% end %>
     </tr>
@@ -149,16 +149,16 @@
 </div>
 <br>
 
-  <%= form_tag roster_path(@roster), method: 'get', enforce_utf8: false do %>
-    <%= label_tag 'Select Player to Drop' %>
-    <div class="form-inline">
-      <%= select_tag "drop", options_from_collection_for_select(droppable_players, 'id', 'name', @player_to_drop || droppable_players.first.id), class: "form-control", id: "player_select" %>
-      <%= hidden_field_tag "week_change", value = @week_change %>
-      <%= hidden_field_tag "day_change", value = @day_change %>
-      <% button_status = @roster.players.empty? ? "btn disabled" : "btn btn-primary" %>
-      <%= submit_tag "Generate Report", class: button_status, disabled: button_status == "btn disabled" %>
-    </div>
-  <% end %>
+<%= form_tag roster_path(@roster), method: 'get', enforce_utf8: false do %>
+  <%= label_tag 'Select Player to Drop' %>
+  <div class="form-inline">
+    <%= select_tag "drop", options_from_collection_for_select(droppable_players, 'id', 'name', @player_to_drop || droppable_players.first.id), class: "form-control", id: "player_select" %>
+    <%= hidden_field_tag "week_change", value = @week_change %>
+    <%= hidden_field_tag "day_change", value = @day_change %>
+    <% button_status = @roster.players.empty? ? "btn disabled" : "btn btn-primary" %>
+    <%= submit_tag "Generate Report", class: button_status, disabled: button_status == "btn disabled" %>
+  </div>
+<% end %>
 
 <% if @player_to_drop %>
   <% dropped_player = @players.find(@player_to_drop) %>
