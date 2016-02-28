@@ -9,12 +9,7 @@ Rails.application.routes.draw do
   get '/team_schedule', to: 'rosters#show_teams'
   post '/rosters/:id', to: 'rosters#create'
 
-  resources :rosters do
-    member do
-      post 'add_slot'
-    end
-  end
-
+  resources :rosters
   resources :users, only: [:create, :edit, :show, :update]
 
 end

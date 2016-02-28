@@ -1,6 +1,8 @@
 class RostersController < ApplicationController
 
-  before_action :set_roster, only: [:show, :edit, :update, :add_slot, :destroy]
+  before_action :require_login, except: [:show_teams]
+  before_action :set_roster, only: [:show, :edit, :update, :destroy]
+  before_action :require_current_user_roster, only: [:edit, :show, :update, :destroy]
 
   def show
     @day_change = params[:day_change].to_i || 0
@@ -9,6 +11,7 @@ class RostersController < ApplicationController
     @daily_rosters = @roster.set_daily_rosters(@start_day)
     @player_to_drop = params[:drop].to_i unless params[:drop] == nil
     @players = Player.all
+    respond_to :html, :js
   end
 
   def new
@@ -46,7 +49,7 @@ class RostersController < ApplicationController
         if duplicates.empty? 
           flash[:success] = "Your roster has been updated."
         else
-          flash[:warning] = "#{duplicates.map {|x| Player.find(x.to_i).name }.join(", ")} #{'was'.pluralize(duplicates.size)} selected mulpitle times. Duplicates #{'has'.pluralize(duplicates.size)} been removed." unless duplicates.empty?
+          flash[:warning] = "#{duplicates.map {|x| Player.find(x.to_i).name }.join(", ")} #{'was'.pluralize(duplicates.size)} selected multiple times. #{'Duplicate'.pluralize(duplicates.size)} #{'has'.pluralize(duplicates.size)} been removed." unless duplicates.empty?
           redirect_to edit_roster_path(@roster) and return
         end
       else
@@ -66,15 +69,6 @@ class RostersController < ApplicationController
       flash[:error] = "#{name} could not be deleted."
     end
     redirect_to rosters_path
-  end
-
-  def add_slot
-    if @roster.update(player_max: @roster.player_max + 1)
-       flash[:success] = "Your roster has been updated."
-    else
-       flash[:notice] = "Your roster could not be updated."
-    end
-    redirect_to edit_roster_path(@roster)
   end
 
   def show_teams

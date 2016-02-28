@@ -1,4 +1,7 @@
-<h3><%= @roster.name %></h3>
+<p class='lead'>
+  <%= @roster.name %>
+</p>
+
 <%= link_to edit_roster_path do %>
   <i class="glyphicon glyphicon-plus"></i>
   <span>Update Roster</span>
@@ -10,204 +13,19 @@
 <% end %> 
 
 <hr>
-
-<div class="btn-group">
-  <% if beginning_of_week? %>
-    <button class="btn disabled">
-      <i class="glyphicon glyphicon-chevron-left"></i>
-      <span>Previous Day</span>
-    </button>
-  <% else %>
-    <%= link_to roster_path(@roster, day_change: @day_change - 1, week_change: @week_change, drop: @player_to_drop), class: "btn btn-default", remote: false do %>
-      <i class="glyphicon glyphicon-chevron-left"></i>
-      <span>Previous Day</span>
-    <% end %> 
-  <% end %>
-  <% if end_of_week? %>
-    <button class="btn disabled">
-      <span>Next Day</span>
-      <i class="glyphicon glyphicon-chevron-right"></i>
-    </button>
-  <% else %>
-    <%= link_to roster_path(@roster, day_change: @day_change + 1, week_change: @week_change, drop: @player_to_drop), class: "btn btn-default", remote: false do %>
-      <span>Next Day</span>
-      <i class="glyphicon glyphicon-chevron-right"></i>
-    <% end %> 
-  <% end %>
-</div>
-
-<div class="btn-group">
-  <%= link_to roster_path(@roster, week_change: @week_change - 1, day_change: 0, drop: @player_to_drop), class: "btn btn-warning", remote: false do %>
-    <i class="glyphicon glyphicon-chevron-left"></i>
-    <span>Previous Week</span>
-  <% end %> 
-  <%= link_to roster_path(@roster, week_change: @week_change + 1, day_change: 0, drop: @player_to_drop), class: "btn btn-warning", remote: false do %>
-    <span>Next Week</span>
-    <i class="glyphicon glyphicon-chevron-right"></i>
-  <% end %>
-</div>
+<%= render 'day_buttons' %>
+<%= render 'week_buttons' %>
 <br>
 <br>
-<% @week_games = [0,0] %>
-<% @week_starts = [0,0] %>
-<% @day_totals = [] %>
-<% @day_totals.fill(0, 0..13) %>
-<% @week_conflicts = [0,0] %>
-<div class="panel panel-default panel-hockey">
-  <table class="table table-bordered table-hover table-responsive">
-    <thead>
-    <tr>
-      <th>Pos</th>
-      <th>Forwards/Defenseman<span style="color:#FFFFFF">____________</span></th>
-      <% for i in 0..13 %>
-        <% if changed_date == (changed_week + i.day) %>
-          <th class="current-day-col">
-        <% else %>
-          <th>
-        <% end %>
-          <%= link_to table_time(changed_week + i.day), roster_path(@roster, day_change: initial_time_offset + i, week_change: @week_change, drop: @player_to_drop) %>
-        </th>
-        <% if [6,13].include?(i) %>
-          <th class="games-col"><%= "Games" %></th>
-          <th class="starts-col"><%= "Starts" %></th>
-          <th class="games-col"><%= "Conflicts" %></th>
-        <% end %>
-      <% end %>
-    </tr>
-    </thead>
-    <% @roster.hash(changed_date).select { |pos, players| ![5, :conflicts].include?(pos) }.each do |pos, players| %>
-      <% players.select { |player_id| find_player(player_id).nil? || !find_player(player_id).position_ids.include?(5) }.each do |player_id| %>
-        <%= render 'player_table', player_id: player_id, pos: pos %>
-      <% end %>
-    <% end %>
-    <tr>
-      <td>-</td>
-      <th>Total Games</th>
-      <% for i in 0..13 do %>
-        <%= raw highlight?(changed_week + i.day, false) %><%= @day_totals[i] %></td>
-        <% if i == 6 || i == 13 %>
-          <% i == 6 ? w = 0 : w = 1 %>
-          <td class="games-col"><%= @week_games[w] %></td>
-          <td class="starts-col"><%= @week_starts[w] %></td>
-          <td class="games-col">-</td>
-        <% end %>
-      <% end %>
-    </tr>
-  </table>
+<div class="panel panel-default panel-hockey" id="player_table">
+  <%= render 'player_table' %>
 </div>
-<br>
-
-<% @week_games = [0,0] %>
-<% @week_starts = [0,0] %>
-<% @day_totals = [] %>
-<% @day_totals.fill(0, 0..13) %>
-<% @week_conflicts = [0,0] %>
-<div class="panel panel-default panel-hockey">
-  <table class="table table-bordered table-hover table-responsive">
-    <tr>
-      <th>Pos</th>
-      <th>Goaltenders<span style="color:#FFFFFF">______________________</span></th>
-      <% for i in 0..13 %>
-      <% if changed_date == (changed_week + i.day) %>
-        <th bgcolor="#e5e5ff">
-      <% else %>
-        <th>
-      <% end %>
-          <%= link_to table_time(changed_week + i.day), roster_path(@roster, day_change: initial_time_offset + i, week_change: @week_change, drop: @player_to_drop) %>
-        </th>
-        <% if [6,13].include?(i) %>
-          <th class="games-col"><%= "Games" %></th>
-          <th class="starts-col"><%= "Starts" %></th>
-          <th class="games-col"><%= "Conflicts" %></th>
-        <% end %>
-      <% end %>
-    </tr>
-    <% @roster.hash(changed_date).select { |pos, players| pos == 5 }.each do |pos, players| %>
-      <% players.each do |player_id| %>
-        <%= render 'player_table', player_id: player_id, pos: pos %>
-      <% end %>
-    <% end %>
-    <% @roster.hash(changed_date).select { |pos, players| [8,9].include?(pos) }.each do |pos, players| %>
-      <% players.select { |player_id| !find_player(player_id).nil? && find_player(player_id).position_ids.include?(5) }.each do |player_id| %>
-        <%= render 'player_table', player_id: player_id, pos: pos %>
-      <% end %>
-    <% end %>
-    <tr>
-      <td>-</td>
-      <th>Total Games</th>
-      <% for i in 0..13 do %>
-        <%= raw highlight?(changed_week + i.day, false) %><%= @day_totals[i] %></td>
-        <% if i == 6 || i == 13 %>
-          <% i == 6 ? w = 0 : w = 1 %>
-          <td class="games-col"><%= @week_games[w] %></td>
-          <td class="starts-col"><%= @week_starts[w] %></td>
-          <td class="games-col">-</td>
-        <% end %>
-      <% end %>
-    </tr>
-  </table>
+<div class="panel panel-default panel-hockey" id="goalie_table">
+  <%= render 'goalie_table' %>
 </div>
+<%= render "legend" %>
 <br>
-
-<%= form_tag roster_path(@roster), method: 'get', enforce_utf8: false do %>
-  <%= label_tag 'Select Player to Drop' %>
-  <div class="form-inline">
-    <%= select_tag "drop", options_from_collection_for_select(droppable_players, 'id', 'name', @player_to_drop || droppable_players.first.id), class: "form-control", id: "player_select" %>
-    <%= hidden_field_tag "week_change", value = @week_change %>
-    <%= hidden_field_tag "day_change", value = @day_change %>
-    <% button_status = @roster.players.empty? ? "btn disabled" : "btn btn-primary" %>
-    <%= submit_tag "Generate Report", class: button_status, disabled: button_status == "btn disabled" %>
-  </div>
-<% end %>
-
-<% if @player_to_drop %>
-  <% dropped_player = @players.find(@player_to_drop) %>
-  <% set_open_games_per_position(dropped_player.id) %>
-  <hr>
-  <p><%= "Dropping: #{dropped_player.name} - #{formatted_datetime(changed_week)} to #{formatted_datetime(changed_week.end_of_week)}" %></p>
-  <br>
-  <p><strong><%= "Recommended Adds:" %></strong></p>
-  <table>
-    <col width="300">
-    <col width="300">
-    <col width="300">
-    <thead>  
-      <tr>
-        <% unless five_game_players.empty? %>
-          <th><%= "Players with 5+ games:"%></th>
-        <% end %>
-        <% unless four_game_players.empty? %>
-        <th><%= "Players with 4 compatible games:" %></th>
-        <% end %>
-        <% unless three_game_players.empty? %>
-        <th><%= "Players with 3 compatible games:" %></th>
-        <% end %>
-        <% unless !five_game_players.empty? || two_game_players.empty? %>
-        <th><%= "Players with 2 compatible games:" %></th>
-        <% end %>
-        <% unless !four_game_players.empty? || one_game_players.empty? %>
-        <th><%= "Players with 1 compatible game:" %></th>
-        <% end %>
-      </tr>
-    </thead>
-    <tbody>
-      <% for row_num in 0..49 %>
-        <tr>
-        <% [five_game_players, four_game_players, three_game_players, two_game_players, one_game_players].reject {|players| players.empty? }.slice(0..2).each do |players| %>
-          <% player = players[row_num] %>
-          <% if player %>
-            <td>
-              <%= link_to roster_path(@roster, week_change: @week_change, day_change: @day_change, drop: @player_to_drop, add: player.id), class: "btn btn-default", method: :put do %>
-                <%= "#{player.id}: #{player.name} - #{player.positions.select { |pos| (1..5).include?(pos.id) }.map {|pos| pos.name }.join(",")}" %>
-              <% end %>
-            </td>
-          <% else %>
-            <td></td>
-          <% end %>
-        <% end %>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% end %>
+<%= render 'drop_interface' %>
+<%= render 'player_report' %>
 <hr>
+<br>

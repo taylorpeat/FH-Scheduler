@@ -44,17 +44,22 @@
 }
 
 .games-col {
- bgcolor: "#FFEBCD";
+ background-color: #FFEBCD;
 }
 
 .starts-col {
- bgcolor: "#FFF8DC"; 
+ background-color: #FFF8DC; 
 }
 
 .current-day-col {
-  bgcolor: "#e5e5ff";
+  background-color: #e5e5ff;
 }
 
 .conflict-col {
-  bgcolor: "#FFFF66";
+  background-color: #FFFF66;
+}
+
+.legend {
+  border: none !important;  
+  outline: none;
 }

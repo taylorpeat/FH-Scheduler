@@ -14,28 +14,31 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li class="active"><a href=<%= rosters_path %>>Index<span class="sr-only">(current)</span></a></li>
+        <% if logged_in? %>
+          <li class="active"><a href=<%= rosters_path %>>Index<span class="sr-only">(current)</span></a></li>
+        <% end %>
         <li><a href=<%= team_schedule_path %>>NHL Team Schedule</a></li>
-        <li class="dropdown">
+        <% if logged_in? %>
+          <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Rosters <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <% if current_user %>
-              <% current_user.rosters.each do |roster| %>
-                <li><a href=<%= roster_path(roster) %>><%= roster.name %></a></li>
-              <% end %>
-              <li role="separator" class="divider"></li>
-              <li><a href=<%= new_roster_path %>><i class="glyphicon glyphicon-plus"></i> New Roster</a></li>
+            <% current_user.rosters.each do |roster| %>
+              <li><a href=<%= roster_path(roster) %>><%= roster.name %></a></li>
             <% end %>
+            <li role="separator" class="divider"></li>
+            <li><a href=<%= new_roster_path %>><i class="glyphicon glyphicon-plus"></i> New Roster</a></li>
           </ul>
-        </li>
+          </li>
+        <% end %>
       </ul>
-      <% if current_user %>
+      <% if logged_in? %>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Log Out</a></li>
+        <li><a href=<%= logout_path %>>Log Out</a></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><%= current_user.username || "Guest" %> <span class="caret"></span></a>
-          <% if current_user && current_user.username %>
+          <% if logged_in? && current_user.username %>
             <ul class="dropdown-menu">
+              <li><a href=<%= user_path(current_user) %>>User Profile</a></li>
               <li><a href=<%= edit_user_path(current_user) %>>Edit User</a></li>
               <li><a href=<%= logout_path %>>Log Out</a></li>
             </ul>

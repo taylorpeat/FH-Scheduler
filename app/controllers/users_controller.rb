@@ -1,13 +1,14 @@
 class UsersController < ApplicationController
 
+  before_action :require_login, except: [:welcome, :new, :create]
   before_action :set_user, only: [:show, :edit, :update]
+  before_action :require_current_user, only: [:edit, :show, :update]
 
   def welcome
     @welcome = true
   end
 
   def new
-    @welcome = true
     @user = User.new
   end
 

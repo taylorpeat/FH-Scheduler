@@ -1,0 +1,52 @@
+<div id="player_report">
+  <% if @player_to_drop %>
+    <% dropped_player = @players.find(@player_to_drop) %>
+    <% set_open_games_per_position(dropped_player.id) %>
+    <hr>
+    <p><%= "Dropping: #{dropped_player.name} - #{formatted_datetime(changed_week)} to #{formatted_datetime(changed_week.end_of_week)}" %></p>
+    <br>
+    <p><strong><%= "Recommended Adds:" %></strong></p>
+    <table>
+      <col width="300">
+      <col width="300">
+      <col width="300">
+      <thead>  
+        <tr>
+          <% unless five_game_players.empty? %>
+            <th><%= "Players with 5+ games:"%></th>
+          <% end %>
+          <% unless four_game_players.empty? %>
+          <th><%= "Players with 4 compatible games:" %></th>
+          <% end %>
+          <% unless three_game_players.empty? %>
+          <th><%= "Players with 3 compatible games:" %></th>
+          <% end %>
+          <% unless !five_game_players.empty? || two_game_players.empty? %>
+          <th><%= "Players with 2 compatible games:" %></th>
+          <% end %>
+          <% unless !four_game_players.empty? || one_game_players.empty? %>
+          <th><%= "Players with 1 compatible game:" %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% for row_num in 0..49 %>
+          <tr>
+          <% [five_game_players, four_game_players, three_game_players, two_game_players, one_game_players].reject {|players| players.empty? }.slice(0..2).each do |players| %>
+            <% player = players[row_num] %>
+            <% if player %>
+              <td>
+                <%= link_to roster_path(@roster, week_change: @week_change, day_change: @day_change, drop: @player_to_drop, add: player.id), class: "btn btn-default", method: :put do %>
+                  <%= "#{player.id}: #{player.name} - #{player.positions.select { |pos| (1..5).include?(pos.id) }.map {|pos| pos.name }.join(",")}" %>
+                <% end %>
+              </td>
+            <% else %>
+              <td></td>
+            <% end %>
+          <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>
