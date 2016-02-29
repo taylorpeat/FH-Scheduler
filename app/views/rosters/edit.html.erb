@@ -4,18 +4,15 @@
   <span>Return to Roster Page</span>
 <% end %>
 <hr>
-<ul class="nav nav-tabs">
-  <li class=<%= params[:tab] ? "active" : "" %>>
-    <%= link_to "Edit Positions", edit_roster_path(@roster, tab: "positions") %>
-  </li>
-  <li class=<%= params[:tab] ? "" : "active" %>>
-    <%= link_to "Edit Players", edit_roster_path(@roster) %>
-  </li>
+<ul class="nav nav-tabs", id="edit-tabs">
+  <%= render 'edit_tabs' %>
 </ul>
 <br>
 
-<% if params[:tab] == "positions" %>
-  <%= render 'roster_positions', submit_wording: "Update Roster Positions", link_path: roster_path(@roster) %>
-<% else %>
-  <%= render 'edit_players' %>
-<% end %>
+<div id="edit-tab-contents">
+  <% if params[:tab] == "positions" %>
+    <%= render 'roster_positions', submit_wording: "Update Roster Positions", link_path: roster_path(@roster) %>
+  <% else %>
+    <%= render 'edit_players' %>
+  <% end %>
+</div>

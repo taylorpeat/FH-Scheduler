@@ -1,4 +1,4 @@
-<div class="btn-group">
+<div class="btn-group" id="week_buttons">
   <%= link_to roster_path(@roster, week_change: @week_change - 1, day_change: 0, drop: @player_to_drop), class: "btn btn-warning", remote: true do %>
     <i class="glyphicon glyphicon-chevron-left"></i>
     <span>Previous Week</span>

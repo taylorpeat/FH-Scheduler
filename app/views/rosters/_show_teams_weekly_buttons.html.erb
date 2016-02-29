@@ -1,0 +1,8 @@
+<%= link_to team_schedule_path(week_change: @week_change - 1), class: "btn btn-warning", remote: true do %>
+  <i class="glyphicon glyphicon-chevron-left"></i>
+  <span>Previous Week</span>
+<% end %> 
+<%= link_to team_schedule_path(week_change: @week_change + 1), class: "btn btn-warning", remote: true do %>
+  <span>Next Week</span>
+  <i class="glyphicon glyphicon-chevron-right"></i>
+<% end %>

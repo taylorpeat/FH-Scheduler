@@ -1,19 +1,19 @@
-<h3>Team Schedule</h3>
-<hr>
+<%= render 'shared/content_title', title: "Team Grid Schedule" %>
 
-<div class="btn-group">
-  <%= link_to team_schedule_path(week_change: @week_change - 1), class: "btn btn-warning", remote: false do %>
-    <i class="glyphicon glyphicon-chevron-left"></i>
-    <span>Previous Week</span>
-  <% end %> 
-  <%= link_to team_schedule_path(week_change: @week_change + 1), class: "btn btn-warning", remote: false do %>
-    <span>Next Week</span>
-    <i class="glyphicon glyphicon-chevron-right"></i>
-  <% end %>
+<div class="btn-group" id="show_teams_buttons">
+  <%= render 'show_teams_weekly_buttons' %>
 </div>
 <br>
 <br>
-<%= render 'team_table', team_group: @teams.limit(10), table_num: "1" %>
-<%= render 'team_table', team_group: @teams.offset(10).limit(10), table_num: "2"  %>
-<%= render 'team_table', team_group: @teams.offset(20).limit(10), table_num: "3" %>
+<div class="panel panel-default panel-hockey" id="team_table_1">
+  <%= render 'team_table', team_group: @teams.limit(10), table_num: "1" %>
+</div>
+<br>
+<div class="panel panel-default panel-hockey" id="team_table_2">
+  <%= render 'team_table', team_group: @teams.offset(10).limit(10), table_num: "2"  %>
+</div>
+<br>
+<div class="panel panel-default panel-hockey" id="team_table_3">
+  <%= render 'team_table', team_group: @teams.offset(20).limit(10), table_num: "3" %>
+</div>
 <hr>

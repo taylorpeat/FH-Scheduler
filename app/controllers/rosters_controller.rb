@@ -11,7 +11,14 @@ class RostersController < ApplicationController
     @daily_rosters = @roster.set_daily_rosters(@start_day)
     @player_to_drop = params[:drop].to_i unless params[:drop] == nil
     @players = Player.all
-    respond_to :html, :js
+    if params[:drop]
+      respond_to do |format|
+        format.html
+        format.js { render 'report.js.erb' }
+      end
+    else
+      respond_to :html, :js
+    end
   end
 
   def new
@@ -34,6 +41,8 @@ class RostersController < ApplicationController
   def edit
     @roster = Roster.find(params[:id])
     @players = Player.all - [Player.find(0)]
+    @tab = params[:tab]
+    respond_to :js, :html
   end
 
   def update
@@ -74,6 +83,7 @@ class RostersController < ApplicationController
   def show_teams
     @teams = Team.all
     @week_change = params[:week_change].to_i || 0
+    respond_to :js, :html
   end
 
   private

@@ -1,15 +1,21 @@
-<h3><%= current_user.username || "Guest" %>'s Rosters:</h3>
-<hr>
+<%= render 'shared/content_title', title: "#{current_user.username || "Guest"}'s Rosters" %>
 <% if !@rosters.empty? %>
-  <% @rosters.each do |roster| %>
-    <%= link_to roster.name, roster_path(roster), class: "btn btn-default" %>
-    <br>
-    <br>
+  <% if @rosters.size > 1 %>
+    <div class="btn-group-vertical col-md-4">
+  <% else %>
+    <div>
   <% end %>
-<% else %>
-  You have no rosters.
-  <br>
-  <br>
-<% end %>
-<br>
-<%= link_to "Create a new roster", new_roster_path, class: "btn btn-primary" %>
+    <% @rosters.each do |roster| %>
+      <%= link_to roster.name, roster_path(roster), class: "btn btn-default" %>
+    <% end %>
+    </div>
+    <% else %>
+      You have no rosters.
+      <br>
+      <br>
+    <% end %>
+<div class="row"></div>
+<hr>
+<div class="col-md-4">
+  <%= link_to "Create a new roster", new_roster_path, class: "btn btn-primary btn-block" %>
+</div>

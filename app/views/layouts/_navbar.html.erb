@@ -17,7 +17,6 @@
         <% if logged_in? %>
           <li class="active"><a href=<%= rosters_path %>>Index<span class="sr-only">(current)</span></a></li>
         <% end %>
-        <li><a href=<%= team_schedule_path %>>NHL Team Schedule</a></li>
         <% if logged_in? %>
           <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Rosters <span class="caret"></span></a>
@@ -30,6 +29,7 @@
           </ul>
           </li>
         <% end %>
+        <li><a href=<%= team_schedule_path %>>NHL Team Schedule</a></li>
       </ul>
       <% if logged_in? %>
       <ul class="nav navbar-nav navbar-right">

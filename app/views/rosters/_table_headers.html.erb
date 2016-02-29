@@ -1,0 +1,20 @@
+<thead>
+  <tr>
+    <th>Pos</th>
+    <th><%= player_title %><span style="color:#FFFFFF"><%= white_space %></span></th>
+    <% for i in 0..13 %>
+      <% if changed_date == (changed_week + i.day) %>
+        <th class="current-day-col">
+      <% else %>
+        <th>
+      <% end %>
+      <%= link_to table_time(changed_week + i.day), roster_path(@roster, day_change: initial_time_offset + i, week_change: @week_change), remote: true %>
+      </th>
+      <% if [6,13].include?(i) %>
+        <th class="games-col"><%= "Games" %></th>
+        <th class="starts-col"><%= "Starts" %></th>
+        <th class="games-col"><%= "Conflicts" %></th>
+      <% end %>
+    <% end %>
+  </tr>
+</thead>

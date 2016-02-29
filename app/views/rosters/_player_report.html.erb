@@ -5,7 +5,6 @@
     <hr>
     <p><%= "Dropping: #{dropped_player.name} - #{formatted_datetime(changed_week)} to #{formatted_datetime(changed_week.end_of_week)}" %></p>
     <br>
-    <p><strong><%= "Recommended Adds:" %></strong></p>
     <table>
       <col width="300">
       <col width="300">
@@ -13,19 +12,19 @@
       <thead>  
         <tr>
           <% unless five_game_players.empty? %>
-            <th><%= "Players with 5+ games:"%></th>
+            <th class="report-headers"><%= "Players with 5+ games:"%></th>
           <% end %>
           <% unless four_game_players.empty? %>
-          <th><%= "Players with 4 compatible games:" %></th>
+          <th class="report-headers"><%= "Players with 4 compatible games:" %></th>
           <% end %>
           <% unless three_game_players.empty? %>
-          <th><%= "Players with 3 compatible games:" %></th>
+          <th class="report-headers"><%= "Players with 3 compatible games:" %></th>
           <% end %>
           <% unless !five_game_players.empty? || two_game_players.empty? %>
-          <th><%= "Players with 2 compatible games:" %></th>
+          <th class="report-headers"><%= "Players with 2 compatible games:" %></th>
           <% end %>
           <% unless !four_game_players.empty? || one_game_players.empty? %>
-          <th><%= "Players with 1 compatible game:" %></th>
+          <th class="report-headers"><%= "Players with 1 compatible game:" %></th>
           <% end %>
         </tr>
       </thead>
@@ -36,7 +35,7 @@
             <% player = players[row_num] %>
             <% if player %>
               <td>
-                <%= link_to roster_path(@roster, week_change: @week_change, day_change: @day_change, drop: @player_to_drop, add: player.id), class: "btn btn-default", method: :put do %>
+                <%= link_to roster_path(@roster, week_change: @week_change, day_change: @day_change, drop: @player_to_drop, add: player.id), class: "btn btn-default col-md-10 btn-block", method: :put do %>
                   <%= "#{player.id}: #{player.name} - #{player.positions.select { |pos| (1..5).include?(pos.id) }.map {|pos| pos.name }.join(",")}" %>
                 <% end %>
               </td>

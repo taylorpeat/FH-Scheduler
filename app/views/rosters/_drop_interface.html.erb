@@ -1,10 +1,14 @@
-<%= form_tag roster_path(@roster), method: 'get', enforce_utf8: false do %>
+<%= form_tag roster_path(@roster), method: 'get', enforce_utf8: false, remote: true do %>
   <%= label_tag 'Select Player to Drop' %>
   <div class="form-inline">
     <%= select_tag "drop", options_from_collection_for_select(droppable_players, 'id', 'name', @player_to_drop || droppable_players.first.id), class: "form-control", id: "player_select" %>
     <%= hidden_field_tag "week_change", value = @week_change %>
     <%= hidden_field_tag "day_change", value = @day_change %>
     <% button_status = @roster.players.empty? ? "btn disabled" : "btn btn-primary" %>
-    <%= submit_tag "Generate Report", class: button_status, disabled: button_status == "btn disabled" %>
+    <%= button_tag class: button_status, disabled: button_status == "btn disabled" do %>
+      <div id="report_button">
+        Generate Report
+      </div>
+    <% end %>
   </div>
 <% end %>

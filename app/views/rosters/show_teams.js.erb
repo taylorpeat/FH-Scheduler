@@ -1,0 +1,5 @@
+$('#team_table_1').html("<%= escape_javascript(render 'team_table', team_group: @teams.limit(10), table_num: "1" ) %>");
+$('#team_table_2').html("<%= escape_javascript(render 'team_table', team_group: @teams.offset(10).limit(10), table_num: "2" ) %>");
+$('#team_table_3').html("<%= escape_javascript(render 'team_table', team_group: @teams.offset(20).limit(10), table_num: "3" ) %>");
+
+$('#show_teams_buttons').html("<%= escape_javascript(render 'show_teams_weekly_buttons') %>");

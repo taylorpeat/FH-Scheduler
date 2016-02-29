@@ -4,45 +4,30 @@
 <% @day_totals.fill(0, 0..13) %>
 <% @week_conflicts = [0,0] %>
 <table class="table table-bordered table-hover table-responsive">
-  <tr>
-    <th>Pos</th>
-    <th>Goaltenders<span style="color:#FFFFFF">______________________</span></th>
-    <% for i in 0..13 %>
-    <% if changed_date == (changed_week + i.day) %>
-      <th class="current-day-col">
-    <% else %>
-      <th>
-    <% end %>
-        <%= link_to table_time(changed_week + i.day), roster_path(@roster, day_change: initial_time_offset + i, week_change: @week_change, drop: @player_to_drop) %>
-      </th>
-      <% if [6,13].include?(i) %>
-        <th class="games-col"><%= "Games" %></th>
-        <th class="starts-col"><%= "Starts" %></th>
-        <th class="games-col"><%= "Conflicts" %></th>
+  <%= render 'table_headers', player_title: "Goaltenders", white_space: "______________________" %>
+  <tbody>
+    <% @roster.hash(changed_date).select { |pos, players| pos == 5 }.each do |pos, players| %>
+      <% players.each do |player_id| %>
+        <%= render 'player_row', player_id: player_id, pos: pos %>
       <% end %>
     <% end %>
-  </tr>
-  <% @roster.hash(changed_date).select { |pos, players| pos == 5 }.each do |pos, players| %>
-    <% players.each do |player_id| %>
-      <%= render 'player_row', player_id: player_id, pos: pos %>
-    <% end %>
-  <% end %>
-  <% @roster.hash(changed_date).select { |pos, players| [8,9].include?(pos) }.each do |pos, players| %>
-    <% players.select { |player_id| !find_player(player_id).nil? && find_player(player_id).position_ids.include?(5) }.each do |player_id| %>
-      <%= render 'player_table', player_id: player_id, pos: pos %>
-    <% end %>
-  <% end %>
-  <tr>
-    <td>-</td>
-    <th>Total Games</th>
-    <% for i in 0..13 do %>
-      <%= raw highlight?(changed_week + i.day, false) %><%= @day_totals[i] %></td>
-      <% if i == 6 || i == 13 %>
-        <% i == 6 ? w = 0 : w = 1 %>
-        <td class="games-col"><%= @week_games[w] %></td>
-        <td class="starts-col"><%= @week_starts[w] %></td>
-        <td class="games-col">-</td>
+    <% @roster.hash(changed_date).select { |pos, players| [8,9].include?(pos) }.each do |pos, players| %>
+      <% players.select { |player_id| !find_player(player_id).nil? && find_player(player_id).position_ids.include?(5) }.each do |player_id| %>
+        <%= render 'player_row', player_id: player_id, pos: pos %>
       <% end %>
     <% end %>
-  </tr>
+    <tr>
+      <td>-</td>
+      <th>Total Games</th>
+      <% for i in 0..13 do %>
+        <%= raw highlight?(changed_week + i.day, false) %><%= @day_totals[i] %></td>
+        <% if i == 6 || i == 13 %>
+          <% i == 6 ? w = 0 : w = 1 %>
+          <td class="games-col"><%= @week_games[w] %></td>
+          <td class="starts-col"><%= @week_starts[w] %></td>
+          <td class="games-col">-</td>
+        <% end %>
+      <% end %>
+    </tr>
+  </tbody>
 </table>
