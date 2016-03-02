@@ -1,19 +1,19 @@
 <%= render 'shared/content_title', title: "Team Grid Schedule" %>
 
-<div class="btn-group" id="show_teams_buttons">
+<div id="show_teams_buttons">
   <%= render 'show_teams_weekly_buttons' %>
 </div>
 <br>
 <br>
 <div class="panel panel-default panel-hockey" id="team_table_1">
-  <%= render 'team_table', team_group: @teams.limit(10), table_num: "1" %>
+  <%= render 'team_table', team_group: @teams.first(10), table_num: "1" %>
 </div>
 <br>
 <div class="panel panel-default panel-hockey" id="team_table_2">
-  <%= render 'team_table', team_group: @teams.offset(10).limit(10), table_num: "2"  %>
+  <%= render 'team_table', team_group: @teams.slice(10..19), table_num: "2"  %>
 </div>
 <br>
 <div class="panel panel-default panel-hockey" id="team_table_3">
-  <%= render 'team_table', team_group: @teams.offset(20).limit(10), table_num: "3" %>
+  <%= render 'team_table', team_group: @teams.slice(20..29), table_num: "3" %>
 </div>
 <hr>

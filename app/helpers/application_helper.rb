@@ -21,15 +21,15 @@ module ApplicationHelper
   end
 
   def find_player(player_id)
-    @roster.players.find(player_id) if player_id != ""
+    @roster_players.find(player_id) if player_id != ""
   end
 
   def find_position(pos_id)
-    @roster.positions.find(pos_id)
+    @roster_positions.find(pos_id)
   end
 
   def ir_slot_count
-    @roster.positions.select { |pos| pos.id == 9 }.size
+    @roster_positions.select { |pos| pos.id == 9 }.size
   end
 
   def highlight?(some_day, conflict_status)
@@ -69,13 +69,13 @@ module ApplicationHelper
   end
 
   def get_player_positions(player)
-    player.positions.select {|pos| ![6,7,8,9].include?(pos.id) }.map {|pos| pos.name }.join(",")
+    player.mem_position_ids.select {|pos_id| ![6,7,8,9].include?(pos_id) }.map {|pos_id| @positions.find(pos_id).name }.join(",")
   end
 
   def set_team_games
     day0 = changed_week.beginning_of_day
     weekly_team_games = {}
-    Team.each do |team|
+    @teams.each do |team|
       for day_num in 0..6
         day = day0 + day_num.day
         weekly_team_games[team.name] << team.games.find_by(date: day) ? :yes : :no
@@ -85,7 +85,7 @@ module ApplicationHelper
   end
 
   def player_open_games(player)
-    @position_open_games[player.position_ids] & all_teams_games[player.team.id]
+    position_open_games[player.mem_position_ids] & all_teams_games[player.team_id]
   end
 
   def set_open_games_per_position(dropped_player_id)
@@ -116,8 +116,12 @@ module ApplicationHelper
     @position_open_games = combo_open_games
   end
 
+  def position_open_games
+    @position_open_games ||= set_open_games_per_position
+  end
+
   def player_games(player)
-    all_teams_games[player.team.id]
+    all_teams_games[player.team_id]
   end
 
   def active_players_each_day
@@ -125,14 +129,14 @@ module ApplicationHelper
     day0 = changed_week.beginning_of_day
     for day_num in 0..6
       day = day0 + day_num.day
-      weeks_active_players << @roster.players.select { |player| player.team.games.find_by(date: day) }
+      weeks_active_players << @roster_players.select { |player| player.mem_team_game(date: day) }
     end
     weeks_active_players
   end
 
   def players_to_check
     return @players_to_check if @players_to_check
-    @players_to_check = @players.all.limit(300) - @roster.players - [Player.find(0)]
+    @players_to_check = Player.limit(400) - @roster.players - [Player.find(0)]
   end
 
   def five_game_players
@@ -165,8 +169,9 @@ module ApplicationHelper
   end
 
   def droppable_players
+    return @droppable_players if @droppable_players
     non_ir_players = @roster.players.take(@roster.player_max - ir_slot_count).reverse
-    empty_slots? ? non_ir_players.unshift(Player.find(0)) : non_ir_players
+    @droppable_players = empty_slots? ? non_ir_players.unshift(Player.find(0)) : non_ir_players
   end
 
   def empty_slots?

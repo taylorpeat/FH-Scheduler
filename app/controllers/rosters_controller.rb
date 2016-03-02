@@ -1,4 +1,4 @@
-class RostersController < ApplicationController
+class RostersController < ApplicationController #didn't render in controllers?
 
   before_action :require_login, except: [:show_teams]
   before_action :set_roster, only: [:show, :edit, :update, :destroy]
@@ -9,8 +9,11 @@ class RostersController < ApplicationController
     @week_change = params[:week_change].to_i || 0
     @start_day = (Date.today.beginning_of_week + @week_change.week).beginning_of_day
     @daily_rosters = @roster.set_daily_rosters(@start_day)
+    @roster_players = @roster.players
+    @roster_positions = @roster.positions
+    @positions = Position.all
     @player_to_drop = params[:drop].to_i unless params[:drop] == nil
-    @players = Player.all
+    @teams = Team.all
     if params[:drop]
       respond_to do |format|
         format.html
@@ -40,7 +43,7 @@ class RostersController < ApplicationController
 
   def edit
     @roster = Roster.find(params[:id])
-    @players = Player.all - [Player.find(0)]
+    @players = Player.limit(1001) - [Player.find(0)]
     @tab = params[:tab]
     respond_to :js, :html
   end
@@ -62,10 +65,10 @@ class RostersController < ApplicationController
           redirect_to edit_roster_path(@roster) and return
         end
       else
-        flash[:notice] = "Your roster could not be updated."
+        flash[:success] = "Your roster could not be updated."
       end
     else
-      flash[:notice] = "Your roster could not be updated."
+      flash[:success] = "Your roster could not be updated."
     end
     redirect_to roster_path(@roster, week_change: params[:week_change], day_change: params[:day_change])
   end
@@ -75,7 +78,7 @@ class RostersController < ApplicationController
     if @roster.delete
       flash[:success] = "#{name} was deleted."
     else
-      flash[:error] = "#{name} could not be deleted."
+      flash[:danger] = "#{name} could not be deleted."
     end
     redirect_to rosters_path
   end
@@ -83,6 +86,10 @@ class RostersController < ApplicationController
   def show_teams
     @teams = Team.all
     @week_change = params[:week_change].to_i || 0
+    @start_day = (Date.today.beginning_of_week + @week_change.week).beginning_of_day
+    if params[:by_game] == "true"
+      @teams = @teams.sort_by { |team| team.games.select { |game| game.date.between?(@start_day, @start_day + 6.days) }.count }.reverse
+    end
     respond_to :js, :html
   end
 
@@ -123,7 +130,7 @@ class RostersController < ApplicationController
         end
         return true
       else
-        flash[:error] = "Roster could not be created."
+        flash[:danger] = "Roster could not be created."
         return false
       end
     end

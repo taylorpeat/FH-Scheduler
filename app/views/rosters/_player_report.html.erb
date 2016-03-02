@@ -1,6 +1,6 @@
 <div id="player_report">
   <% if @player_to_drop %>
-    <% dropped_player = @players.find(@player_to_drop) %>
+    <% dropped_player = droppable_players.detect { |player| player.id == @player_to_drop } %>
     <% set_open_games_per_position(dropped_player.id) %>
     <hr>
     <p><%= "Dropping: #{dropped_player.name} - #{formatted_datetime(changed_week)} to #{formatted_datetime(changed_week.end_of_week)}" %></p>

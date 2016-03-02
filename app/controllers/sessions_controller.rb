@@ -3,7 +3,7 @@ class SessionsController < ApplicationController
   def new
     @welcome = true
     if logged_in?
-      flash[:notice] = "You are already logged in."
+      flash[:success] = "You are already logged in."
       redirect_to root_path
     end
   end
@@ -12,17 +12,17 @@ class SessionsController < ApplicationController
     user = User.find_by_username(params[:username])
       if user && user.authenticate(params[:password])
         session[:user_id] = user.id
-        flash[:notice] = "Logged in successfully."
+        flash[:success] = "Logged in successfully."
         redirect_to rosters_path
       else
-        flash[:notice] = "There was a problem with your username or password."
+        flash[:danger] = "There was a problem with your username or password."
         render 'new'
       end 
   end
 
   def destroy
     session[:user_id] = nil
-    flash[:notice] = "Logged out successfully."
+    flash[:success] = "Logged out successfully."
     redirect_to root_path
   end
 

@@ -11,21 +11,21 @@ class ApplicationController < ActionController::Base
 
   def require_login
     unless logged_in?
-      flash[:error] = "You must be logged in to access this page."
+      flash[:danger] = "You must be logged in to access this page."
       redirect_to root_path
     end
   end
 
   def require_current_user
     if current_user != User.find(params[:id])
-      flash[:error] = "You do not have access to this page."
+      flash[:danger] = "You do not have access to this page."
       redirect_to root_path
     end
   end
 
   def require_current_user_roster
     unless current_user.rosters.include?(@roster)
-      flash[:error] = "You do not have access to this roster."
+      flash[:danger] = "You do not have access to this roster."
       if logged_in?
         redirect_to rosters_path and return
       else

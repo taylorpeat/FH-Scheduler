@@ -8,24 +8,28 @@ class Roster < ActiveRecord::Base
   attr_reader :roster_hash, :day
   attr_accessor :conflicts
 
-  def hash(roster_day)
-    return roster_hash if @day == roster_day
-    @day = roster_day
-    @conflicts = []
-    initialize_hash
-    assign_all_players
-    roster_hash
+  def mem_players
+    @mem_player ||= self.players
   end
 
   def set_daily_rosters(roster_day)
     daily_rosters = []
     for i in 0..13
-      daily_rosters << self.hash(roster_day + i.day)
+      daily_rosters << hash(roster_day + i.day)
     end
     daily_rosters
   end
 
   private
+
+    def hash(roster_day)
+      return roster_hash if @day == roster_day
+      @day = roster_day
+      @conflicts = []
+      initialize_hash
+      assign_all_players
+      roster_hash
+    end
 
     def initialize_hash
       @roster_hash = Hash.new([])
@@ -39,20 +43,20 @@ class Roster < ActiveRecord::Base
     def assign_all_players
       non_ir_player_size = self.player_max - self.positions.select { |pos| pos.id == 9 }.size
       assign_ir_players(non_ir_player_size)
-      self.players.take(non_ir_player_size).sort.each do |player|
+      self.mem_players.take(non_ir_player_size).sort.each do |player|
         assign_single_player(player)
       end
     end
 
     def assign_ir_players(non_ir_player_size)
-      self.players.drop(non_ir_player_size).each do |player|
+      self.mem_players.drop(non_ir_player_size).each do |player|
         assign_player_to_bench_or_ir(player.id, 9)
       end
     end
 
     def assign_single_player(player)
       no_player = Proc.new { |slot_val| slot_val == "" }
-      no_game = Proc.new { |slot_val| !self.players.find(slot_val).team.games.find_by(date: day) }
+      no_game = Proc.new { |slot_val| !self.mem_players.find(slot_val).team.games.find_by(date: day) }
       unless assign_to_slot(player, &no_player)
 
         if no_game.call(player.id)
@@ -72,7 +76,7 @@ class Roster < ActiveRecord::Base
       if assign_player_directly(player, &criteria)
         return true
       else
-        if move_other_players(player.position_ids, player.position_ids, &criteria)
+        if move_other_players(player.mem_position_ids, player.mem_position_ids, &criteria)
           assign_player_directly(player) { |slot_val| slot_val == "" }
           return true
         end
@@ -82,7 +86,7 @@ class Roster < ActiveRecord::Base
 
     def assign_player_directly(player, &criteria)
 
-      player.position_ids.each do |pos|
+      player.mem_position_ids.each do |pos|
         roster_hash[pos].each_with_index do |slot_val, idx|
           if criteria.call(slot_val)
             if slot_val != ""
@@ -105,7 +109,7 @@ class Roster < ActiveRecord::Base
     def assign_player_to_bench_or_ir(player_id, pos)
 
       add_or_replace_bench_or_ir(player_id, pos)
-      if self.players.find(player_id).team.games.find_by(date: day)
+      if self.mem_players.find(player_id).team.games.find_by(date: day)
         unless roster_hash[:conflicts].include?(player_id) || pos == 9
           roster_hash[:conflicts] += [player_id]
           update_conflict_positions(player_id)
@@ -130,7 +134,7 @@ class Roster < ActiveRecord::Base
 
 
     def update_conflict_positions(player_id)
-      new_conflicts = self.players.find(player_id).position_ids - conflicts
+      new_conflicts = self.mem_players.find(player_id).mem_position_ids - conflicts
       self.conflicts += new_conflicts
       new_conflicts.each do |pos|
         roster_hash[pos].each do |pos_player_id|
@@ -153,7 +157,7 @@ class Roster < ActiveRecord::Base
       else        
         new_positions_checked = positions_to_check + positions_checked
         next_positions_to_check = players_blocking_slots.inject([]) do |all_player_ids, b_player_id|
-          all_player_ids += self.players.find(b_player_id).position_ids
+          all_player_ids += self.mem_players.find(b_player_id).mem_position_ids
         end.uniq - new_positions_checked
         if next_positions_to_check.empty?
           return false
@@ -169,7 +173,7 @@ class Roster < ActiveRecord::Base
 
     def move_player(players_blocking_slots, positions_checked, &criteria)
       players_blocking_slots.reverse.each do |player_id|
-        self.players.find(player_id).position_ids.select { |pos| !positions_checked.include?(pos) }.each do |pos|
+        self.mem_players.find(player_id).mem_position_ids.select { |pos| !positions_checked.include?(pos) }.each do |pos|
           roster_hash[pos].reverse.each_with_index do |slot_val, idx|
             if criteria.call(slot_val)
               if slot_val != ""

@@ -30,7 +30,7 @@ class UsersController < ApplicationController
       end
       redirect_to rosters_path
     else
-      flash[:error] = "User could not be created."
+      flash[:danger] = "User could not be created."
       render 'new'
     end
   end
@@ -40,7 +40,7 @@ class UsersController < ApplicationController
       flash[:success] = "User has been updated."
       redirect_to user_path(@user) and return
     else
-      flash[:error] = "User could not be updated."
+      flash[:danger] = "User could not be updated."
       redirect_to edit_user_path(@user) and return
     end
   end

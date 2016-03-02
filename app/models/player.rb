@@ -13,4 +13,12 @@ class Player < ActiveRecord::Base
     "#{name}: ##{ranking} - #{team.name.upcase}"
   end
   
+  def mem_position_ids
+    @mem_position_ids ||= self.position_ids
+  end
+
+  def mem_team_game(day)
+    @mem_team_games ||= Hash.new { |hash, day| hash[day] = self.team.games.find_by(date: day) }
+    @mem_team_games[day]
+  end
 end

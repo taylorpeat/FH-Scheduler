@@ -3,3 +3,11 @@ $('#goalie_table').html("<%= escape_javascript(render 'goalie_table') %>");
 
 $('#day_buttons').replaceWith("<%= escape_javascript(render 'day_buttons') %>");
 $('#week_buttons').replaceWith("<%= escape_javascript(render 'week_buttons') %>");
+
+$('#drop_interface').replaceWith("<%= escape_javascript(render 'drop_interface') %>");
+
+$(function() {
+  $('#report_button').click(function() {
+    $('#report_button').html("<%= escape_javascript(render 'loading_button') %>");
+  });
+});
