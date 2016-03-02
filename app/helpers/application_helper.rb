@@ -3,17 +3,10 @@ module ApplicationHelper
   include TeamCheckable
   PLAYER_LIMIT = 49
   ROSTER_DEFAULTS = {C: 2, LW: 2, RW: 2, D: 4, G: 2, F: 0, U: 0, BN: 4, IR: 0}
+  POSITION_IDS = {1 => "C", 2 => "LW", 3 => "RW", 4 => "D", 5 => "G", 6 => nil, 7 => nil, 8 => nil, 9 => nil}
 
   def table_time(time)
     time.strftime("%m/%d")
-  end
-
-  def determine_forward(pos, game_date)
-    if @forwards.select { |f| f.positions.include?(pos) && f.team.games.find_by(date: game_date) }.size > 0
-      @forwards.select { |f| f.positions.include?(pos) && f.team.games.find_by(date: game_date) }.first
-    elsif @forwards.select { |f| f.positions.include?(pos) }.size > 0
-      @forwards.select { |f| f.positions.include?(pos) }.first
-    end
   end
 
   def current_day
@@ -21,7 +14,7 @@ module ApplicationHelper
   end
 
   def find_player(player_id)
-    @roster_players.find(player_id) if player_id != ""
+    @roster.mem_players.find(player_id) if player_id != ""
   end
 
   def find_position(pos_id)
@@ -68,8 +61,12 @@ module ApplicationHelper
     end
   end
 
+  def get_roster_player_positions(player_id)
+    @roster.mem_position_ids(player_id).map {|pos_id| POSITION_IDS[pos_id] }.compact.join(",")
+  end
+
   def get_player_positions(player)
-    @roster.mem_position_ids(player).select {|pos_id| ![6,7,8,9].include?(pos_id) }.map {|pos_id| @positions.find(pos_id).name }.join(",")
+    mem_position_ids(player).map {|pos_id| POSITION_IDS[pos_id] }.compact.join(",")
   end
 
   def set_team_games
@@ -85,7 +82,12 @@ module ApplicationHelper
   end
 
   def player_open_games(player)
-    position_open_games[@roster.mem_position_ids(player)] & all_teams_games[player.team_id]
+    position_open_games[mem_position_ids(player)] & all_teams_games[player.team_id]
+  end
+
+  def mem_position_ids(player)
+    @mem_position_ids ||= Hash.new { |hash, player| hash[player] = player.position_ids }
+    @mem_position_ids[player]
   end
 
   def set_open_games_per_position(dropped_player_id)
@@ -129,7 +131,7 @@ module ApplicationHelper
     day0 = changed_week.beginning_of_day
     for day_num in 0..6
       day = day0 + day_num.day
-      weeks_active_players << @roster.mem_players.select { |player| @roster.mem_team_game(player.team, date: day) }
+      weeks_active_players << @roster.mem_players.select { |player| @roster.mem_team_game(player.team, day) }
     end
     weeks_active_players
   end

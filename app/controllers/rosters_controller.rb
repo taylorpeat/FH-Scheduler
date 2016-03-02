@@ -12,7 +12,6 @@ class RostersController < ApplicationController #didn't render in controllers?
     @roster_positions = @roster.positions
     @player_to_drop = params[:drop].to_i unless params[:drop] == nil
     @teams = Team.all
-    @positions = Position.all
     if params[:drop]
       respond_to do |format|
         format.html

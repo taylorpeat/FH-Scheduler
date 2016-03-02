@@ -6,7 +6,7 @@ module PlayerCheckable
     for day_num in 0..6
       open_positions[day_num] += day_roster_openings(@daily_rosters[day_num], dropped_player_id, day_num)
     end
-    @weekly_open_positions = set_position_open_days_hash(open_positions)
+    @weekly_open_positions = set_all_position_open_days_hash(open_positions)
   end
 
   def day_roster_openings(roster, dropped_player_id, day_num)
@@ -55,14 +55,14 @@ module PlayerCheckable
     open_positions
   end
 
-  def set_position_open_days_hash(open_positions)
-    position_weekly_openings = Hash.new([])
+  def set_all_position_open_days_hash(open_positions)
+    all_position_weekly_openings = Hash.new([])
     for pos_id in 1..7
       for day_num in 0..6
-        position_weekly_openings[pos_id] += [day_num] if open_positions[day_num].include?(pos_id)
+        all_position_weekly_openings[pos_id] += [day_num] if open_positions[day_num].include?(pos_id)
       end
     end
-    position_weekly_openings
+    all_position_weekly_openings
   end
 
 end

@@ -1,13 +1,14 @@
+<% row_player = find_player(player_id) %>
 <% player_games = 0 %>
 <% player_starts = 0 %>
 <tr>
-  <td><%= Position.find(pos).name || "Empty" %></td>
+  <td><%= Position.find(pos).name || "BN" %></td>
   <td>
-    <%= row_player ? "#{row_player.name} #{row_player.team.name.upcase} - #{get_player_positions(row_player)}" : "Empty" %>
+    <%= row_player ? "#{row_player.name} #{@teams.find(row_player.team_id).name.upcase} - #{get_roster_player_positions(player_id)}" : "Empty" %>
   </td>
   <% conflicts = 0 %>
   <% for j in 0..13 %>
-    <% if @daily_rosters[j][:conflicts].include?(row_player.id) %>
+    <% if @daily_rosters[j][:conflicts].include?(player_id) %>
       <% conflicts += 1 %>
       <% conflict_status = true %>
     <% else %>
@@ -15,11 +16,11 @@
     <% end %>
     <% parsed_datetime = (changed_week + j.day).beginning_of_day %>
     <% if row_player %>
-      <% game = @roster.mem_team_game(row_player.team, parsed_datetime) %>
+      <% game = @roster.mem_team_game(@teams.find(row_player.team_id), parsed_datetime) %>
       <% if game %>
         <% player_games += 1 %>
-        <% player_starts += 1 unless @daily_rosters[j][8].include?(row_player.id) || pos == 9 %>
-        <% @day_totals[j] += 1 unless @daily_rosters[j][8].include?(row_player.id) || pos == 9 %>
+        <% player_starts += 1 unless @daily_rosters[j][8].include?(player_id) || pos == 9 %>
+        <% @day_totals[j] += 1 unless @daily_rosters[j][8].include?(player_id) || pos == 9 %>
         <%= raw highlight?(parsed_datetime, conflict_status) %>
           <%= (game.teams - [row_player.team]).first.name %>
         </td>

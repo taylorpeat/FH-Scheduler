@@ -8,27 +8,27 @@ class Roster < ActiveRecord::Base
   attr_reader :roster_hash, :day
   attr_accessor :conflicts
 
-  def mem_players
-    @mem_players ||= self.players
-  end
-
-  def mem_position_ids(player)
-    @mem_position_ids ||= Hash.new { |hash, player| hash[player] = player.position_ids }
-    @mem_position_ids[player]
-  end
-
-  def mem_team_game(team, day)
-    team_day = [team, day]
-    @mem_team_game ||= Hash.new { |hash, team_day| hash[team_day] = team_day[0].games.find_by(date: team_day[1]) }
-    @mem_team_game[team_day]
-  end
-
   def set_daily_rosters(roster_day)
     daily_rosters = []
     for i in 0..13
       daily_rosters << hash(roster_day + i.day)
     end
     daily_rosters
+  end
+
+  def mem_players
+    @mem_players ||= self.players
+  end
+
+  def mem_position_ids(player_id)
+    @mem_position_ids ||= Hash.new { |hash, player_id| hash[player_id] = mem_players.find(player_id).position_ids }
+    @mem_position_ids[player_id]
+  end
+
+  def mem_team_game(team, day)
+    team_day = [team, day]
+    @mem_team_game ||= Hash.new { |hash, team_day| hash[team_day] = team_day[0].games.find_by(date: team_day[1]) }
+    @mem_team_game[team_day]
   end
 
   private
@@ -39,7 +39,7 @@ class Roster < ActiveRecord::Base
       @conflicts = []
       initialize_hash
       assign_all_players
-      roster_hash.each { |pos, players| players.map! { |player_id| (mem_players.detect { |player| player.id == player_id } unless player_id  == "") || player_id }}
+      roster_hash
     end
 
     def initialize_hash
@@ -83,7 +83,7 @@ class Roster < ActiveRecord::Base
       if assign_player_directly(player, &criteria)
         return true
       else
-        if move_other_players(mem_position_ids(player), mem_position_ids(player), &criteria)
+        if move_other_players(mem_position_ids(player.id), mem_position_ids(player.id), &criteria)
           assign_player_directly(player) { |slot_val| slot_val == "" }
           return true
         end
@@ -92,7 +92,7 @@ class Roster < ActiveRecord::Base
     end
 
     def assign_player_directly(player, &criteria)
-      mem_position_ids(player).each do |pos|
+      mem_position_ids(player.id).each do |pos|
         roster_hash[pos].each_with_index do |slot_val, idx|
           if criteria.call(slot_val)
             if slot_val != ""
@@ -140,7 +140,7 @@ class Roster < ActiveRecord::Base
 
 
     def update_conflict_positions(player_id)
-      new_conflicts = mem_position_ids(self.mem_players.find(player_id)) - conflicts
+      new_conflicts = mem_position_ids(player_id) - conflicts
       self.conflicts += new_conflicts
       new_conflicts.each do |pos|
         roster_hash[pos].each do |pos_player_id|
@@ -163,7 +163,7 @@ class Roster < ActiveRecord::Base
       else        
         new_positions_checked = positions_to_check + positions_checked
         next_positions_to_check = players_blocking_slots.inject([]) do |all_player_ids, b_player_id|
-          all_player_ids += mem_position_ids(self.mem_players.find(b_player_id))
+          all_player_ids += mem_position_ids(b_player_id)
         end.uniq - new_positions_checked
         if next_positions_to_check.empty?
           return false
@@ -179,7 +179,7 @@ class Roster < ActiveRecord::Base
 
     def move_player(players_blocking_slots, positions_checked, &criteria)
       players_blocking_slots.reverse.each do |player_id|
-        mem_position_ids(self.mem_players.find(player_id)).select { |pos| !positions_checked.include?(pos) }.each do |pos|
+        mem_position_ids(player_id).select { |pos| !positions_checked.include?(pos) }.each do |pos|
           roster_hash[pos].reverse.each_with_index do |slot_val, idx|
             if criteria.call(slot_val)
               if slot_val != ""
