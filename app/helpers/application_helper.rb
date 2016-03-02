@@ -69,7 +69,7 @@ module ApplicationHelper
   end
 
   def get_player_positions(player)
-    player.mem_position_ids.select {|pos_id| ![6,7,8,9].include?(pos_id) }.map {|pos_id| @positions.find(pos_id).name }.join(",")
+    @roster.mem_position_ids(player).select {|pos_id| ![6,7,8,9].include?(pos_id) }.map {|pos_id| @positions.find(pos_id).name }.join(",")
   end
 
   def set_team_games
@@ -85,7 +85,7 @@ module ApplicationHelper
   end
 
   def player_open_games(player)
-    position_open_games[player.mem_position_ids] & all_teams_games[player.team_id]
+    position_open_games[@roster.mem_position_ids(player)] & all_teams_games[player.team_id]
   end
 
   def set_open_games_per_position(dropped_player_id)
@@ -129,14 +129,14 @@ module ApplicationHelper
     day0 = changed_week.beginning_of_day
     for day_num in 0..6
       day = day0 + day_num.day
-      weeks_active_players << @roster_players.select { |player| player.mem_team_game(date: day) }
+      weeks_active_players << @roster.mem_players.select { |player| @roster.mem_team_game(player.team, date: day) }
     end
     weeks_active_players
   end
 
   def players_to_check
     return @players_to_check if @players_to_check
-    @players_to_check = Player.limit(400) - @roster.players - [Player.find(0)]
+    @players_to_check = Player.limit(400) - @roster.mem_players - [Player.find(0)]
   end
 
   def five_game_players
@@ -170,12 +170,12 @@ module ApplicationHelper
 
   def droppable_players
     return @droppable_players if @droppable_players
-    non_ir_players = @roster.players.take(@roster.player_max - ir_slot_count).reverse
+    non_ir_players = @roster.mem_players.take(@roster.player_max - ir_slot_count).reverse
     @droppable_players = empty_slots? ? non_ir_players.unshift(Player.find(0)) : non_ir_players
   end
 
   def empty_slots?
-    @roster.players.size < (@roster.player_max - ir_slot_count) || @roster.players.size == 0
+    @roster.mem_players.size < (@roster.player_max - ir_slot_count) || @roster.mem_players.size == 0
   end
 
   def formatted_datetime(day)

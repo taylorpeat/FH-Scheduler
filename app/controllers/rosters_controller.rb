@@ -9,11 +9,10 @@ class RostersController < ApplicationController #didn't render in controllers?
     @week_change = params[:week_change].to_i || 0
     @start_day = (Date.today.beginning_of_week + @week_change.week).beginning_of_day
     @daily_rosters = @roster.set_daily_rosters(@start_day)
-    @roster_players = @roster.players
     @roster_positions = @roster.positions
-    @positions = Position.all
     @player_to_drop = params[:drop].to_i unless params[:drop] == nil
     @teams = Team.all
+    @positions = Position.all
     if params[:drop]
       respond_to do |format|
         format.html
