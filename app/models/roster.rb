@@ -39,6 +39,7 @@ class Roster < ActiveRecord::Base
       @conflicts = []
       initialize_hash
       assign_all_players
+      binding.pry
       roster_hash
     end
 
