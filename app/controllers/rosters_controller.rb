@@ -7,10 +7,9 @@ class RostersController < ApplicationController #didn't render in controllers?
   def show
     @day_change = params[:day_change].to_i || 0
     @week_change = params[:week_change].to_i || 0
-    @start_day = (Date.today.beginning_of_week + @week_change.week).beginning_of_day
-    @daily_rosters = @roster.set_daily_rosters(@start_day)
-    @roster_positions = @roster.positions
     @player_to_drop = params[:drop].to_i unless params[:drop] == nil
+    @start_day = (Date.today.beginning_of_week + @week_change.week).beginning_of_day
+    @daily_rosters = @roster.set_daily_rosters(@start_day, @player_to_drop)
     @teams = Team.all
     if params[:drop]
       respond_to do |format|
@@ -29,9 +28,19 @@ class RostersController < ApplicationController #didn't render in controllers?
   def create
     if params[:id]
       set_roster
-      redirect_to set_roster_positions ? roster_path(@roster) : edit_roster_path(@roster, tab: "positions")
+      if set_roster_positions
+        redirect_to roster_path(@roster)
+      else
+        flash[:danger] = "Your roster could not be updated."
+        redirect_to edit_roster_path(@roster, tab: "positions")
+      end
     else
-      redirect_to set_roster_positions ? edit_roster_path(@roster) : new_roster_path
+      if set_roster_positions 
+        redirect_to edit_roster_path(@roster)
+      else
+        flash[:danger] = "Your roster could not be created."
+        render :new
+      end
     end
   end
 
@@ -128,7 +137,6 @@ class RostersController < ApplicationController #didn't render in controllers?
         end
         return true
       else
-        flash[:danger] = "Roster could not be created."
         return false
       end
     end

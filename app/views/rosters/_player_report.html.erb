@@ -29,14 +29,14 @@
         </tr>
       </thead>
       <tbody>
-        <% for row_num in 0..49 %>
+        <% for row_num in 0..149 %>
           <tr>
           <% [five_game_players, four_game_players, three_game_players, two_game_players, one_game_players].reject {|players| players.empty? }.slice(0..2).each do |players| %>
             <% player = players[row_num] %>
             <% if player %>
               <td>
                 <%= link_to roster_path(@roster, week_change: @week_change, day_change: @day_change, drop: @player_to_drop, add: player.id), class: "btn btn-default col-md-10 btn-block", method: :put do %>
-                  <%= "#{player.id}: #{player.name} - #{get_player_positions(player)}" %>
+                  <%= "#{player.id}: #{player.name} - #{get_player_positions(player)} - #{player.team.name}" %>
                 <% end %>
               </td>
             <% else %>

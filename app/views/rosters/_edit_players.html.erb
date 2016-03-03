@@ -14,7 +14,9 @@
           <% end %>
         </td>
         <td>
-          <%= f.collection_select :player_ids, @players.take(1000), :id, :name_for_select, {include_blank: 'None', selected: @roster.player_ids[i - 1] }, { name: "roster[player_ids][]", class: "form-control input-sm", id: "update_select"  } %>
+          <%= f.collection_select :player_ids, @players, :id, :name_for_select,
+              {include_blank: 'None', selected: @roster.player_ids[i - 1] },
+              { name: "roster[player_ids][]", class: "form-control input-sm", id: "update_select"  } %>
         </td>
       </tr>
     <% end %>
