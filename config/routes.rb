@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   post '/login', to: 'sessions#create'
   get '/logout', to: 'sessions#destroy'
   get '/team_schedule', to: 'rosters#show_teams'
-  post '/rosters/:id', to: 'rosters#create'
+  # post '/rosters/:id', to: 'rosters#create'
 
   resources :rosters
   resources :users, only: [:create, :edit, :show, :update]

@@ -45,14 +45,14 @@ class ApplicationController < ActionController::Base
 
   def arrange_roster_ids(roster_ids)
     roster_ids.map!(&:to_i)
-    if roster_ids.size == @roster.player_max
-      ir_players = roster_ids.pop(@roster.positions.select {|pos| pos.id == 9 }.size)
+    num_empty_slots = @roster.player_max - roster_ids.size
+    num_ir_slots = @roster.positions.select {|pos| pos.id == 9 }.size
+    if num_empty_slots < num_ir_slots
+      ir_players = roster_ids.pop(num_ir_slots - num_empty_slots)
     else
       ir_players = []
     end
-    roster_ids.sort!.delete(0)
-    ir_players.sort!.delete(0)
-    { "player_ids" => (roster_ids + ir_players).map(&:to_s).uniq }
+    sort_and_return_roster_params(roster_ids, ir_players)
   end
 
   def add_remove_players(player_to_drop, player_to_add)
@@ -60,8 +60,12 @@ class ApplicationController < ActionController::Base
     roster_ids.delete(player_to_drop.to_i)
     ir_players = roster_ids.pop(@roster.positions.select {|pos| pos.id == 9 }.size)
     roster_ids += [player_to_add.to_i]
-    roster_ids.sort!
-    ir_players.sort!
-    { "player_ids" => (roster_ids + ir_players).map(&:to_s) }
+    sort_and_return_roster_params(roster_ids, ir_players)
+  end
+
+  def sort_and_return_roster_params(roster_ids, ir_players)
+    roster_ids.sort!.delete(0)
+    ir_players.sort!.delete(0)
+    { "player_ids" => (roster_ids + ir_players).map(&:to_s).uniq } 
   end
 end
