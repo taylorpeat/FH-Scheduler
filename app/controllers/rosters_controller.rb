@@ -29,7 +29,7 @@ class RostersController < ApplicationController #didn't render in controllers?
     if set_roster_positions 
       redirect_to edit_roster_path(@roster)
     else
-      flash[:danger] = "Your roster could not be created."
+      flash.now[:danger] = "Your roster could not be created."
       render :new
     end
   end
@@ -113,9 +113,7 @@ class RostersController < ApplicationController #didn't render in controllers?
     end
 
     def set_roster_positions
-      position_arr = {1 => params[:C].to_i, 2 => params[:LW].to_i, 3 => params[:RW].to_i,
-                      4 => params[:D].to_i, 6 => params[:F].to_i, 7 => params[:U].to_i,
-                      5 => params[:G].to_i, 8 => params[:BN].to_i, 9 => params[:IR].to_i}
+      position_arr = set_position_array
       @roster = @roster || Roster.new
       @roster.user_id = @roster.user_id || current_user.id
       @roster.name = params[:team_name]
@@ -126,11 +124,7 @@ class RostersController < ApplicationController #didn't render in controllers?
         @roster.player_max))
       end
       @roster.position_rosters.clear if @roster.position_rosters
-      position_arr.each do |pos, num|
-        num.to_i.times do
-          roster_postition = @roster.position_rosters.new(position_id: pos)
-        end
-      end
+      create_roster_positions(position_arr)
       if @roster.save
         unless dropped_players.empty?
           flash[:warning] = roster_reduced_warning_message
@@ -138,6 +132,20 @@ class RostersController < ApplicationController #didn't render in controllers?
         return true
       else
         return false
+      end
+    end
+
+    def set_position_array
+      position_arr = {1 => params[:C].to_i, 2 => params[:LW].to_i, 3 => params[:RW].to_i,
+                      4 => params[:D].to_i, 6 => params[:F].to_i, 7 => params[:U].to_i,
+                      5 => params[:G].to_i, 8 => params[:BN].to_i, 9 => params[:IR].to_i}
+    end
+
+    def create_roster_positions(position_arr)
+      position_arr.each do |pos, num|
+        num.to_i.times do
+          roster_postition = @roster.position_rosters.new(position_id: pos)
+        end
       end
     end
 
