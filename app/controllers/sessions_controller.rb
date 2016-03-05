@@ -1,7 +1,6 @@
 class SessionsController < ApplicationController
 
   def new
-    @welcome = true
     if logged_in?
       flash[:success] = "You are already logged in."
       redirect_to root_path
