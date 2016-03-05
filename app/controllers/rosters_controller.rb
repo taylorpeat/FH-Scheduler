@@ -26,21 +26,11 @@ class RostersController < ApplicationController #didn't render in controllers?
   end
 
   def create
-    if params[:id]
-      set_roster
-      if set_roster_positions
-        redirect_to roster_path(@roster)
-      else
-        flash[:danger] = "Your roster could not be updated."
-        redirect_to edit_roster_path(@roster, tab: "positions")
-      end
+    if set_roster_positions 
+      redirect_to edit_roster_path(@roster)
     else
-      if set_roster_positions 
-        redirect_to edit_roster_path(@roster)
-      else
-        flash[:danger] = "Your roster could not be created."
-        render :new
-      end
+      flash[:danger] = "Your roster could not be created."
+      render :new
     end
   end
 
@@ -56,28 +46,39 @@ class RostersController < ApplicationController #didn't render in controllers?
   end
 
   def update
-    if params[:drop] && params[:add]
-      params[:roster] = add_remove_players(params[:drop], params[:add])
-    end
-    players_added = params[:roster]["player_ids"]
-    duplicates = players_added.select { |id| players_added.count(id) > 1 && id != "" }.uniq
-    if params[:roster]
-      if @roster.update(arrange_roster_ids(roster_params["player_ids"]))
-        @roster.players.clear
-        @roster.update(arrange_roster_ids(roster_params["player_ids"]))
-        if duplicates.empty? 
-          flash[:success] = "Your roster has been updated."
+    binding.pry
+    if params[:drop] || params[:roster]
+      params[:roster] = add_remove_players(params[:drop], params[:add]) if params[:drop]
+      players_added = params[:roster]["player_ids"]
+      duplicates = players_added.select { |id| players_added.count(id) > 1 && id != "" }.uniq
+      if params[:roster]
+        binding.pry
+        if @roster.authenticate_(arrange_roster_ids(roster_params["player_ids"]))
+          @roster.players.clear
+          @roster.update(arrange_roster_ids(roster_params["player_ids"]))
+          if duplicates.empty? 
+            flash[:success] = "Your roster has been updated."
+          else
+            flash[:warning] = "#{duplicates.map {|x| Player.find(x.to_i).name }.join(", ")} #{'was'.pluralize(duplicates.size)} selected multiple times. #{'Duplicate'.pluralize(duplicates.size)} #{'has'.pluralize(duplicates.size)} been removed." unless duplicates.empty?
+            redirect_to edit_roster_path(@roster) and return
+          end
         else
-          flash[:warning] = "#{duplicates.map {|x| Player.find(x.to_i).name }.join(", ")} #{'was'.pluralize(duplicates.size)} selected multiple times. #{'Duplicate'.pluralize(duplicates.size)} #{'has'.pluralize(duplicates.size)} been removed." unless duplicates.empty?
-          redirect_to edit_roster_path(@roster) and return
+          flash[:success] = "Your roster could not be updated."
         end
       else
         flash[:success] = "Your roster could not be updated."
       end
+      redirect_to roster_path(@roster, week_change: params[:week_change], day_change: params[:day_change])
     else
-      flash[:success] = "Your roster could not be updated."
+      binding.pry
+      set_roster
+      if set_roster_positions
+        redirect_to roster_path(@roster)
+      else
+        flash[:danger] = "Your roster could not be updated."
+        redirect_to edit_roster_path(@roster, tab: "positions")
+      end
     end
-    redirect_to roster_path(@roster, week_change: params[:week_change], day_change: params[:day_change])
   end
 
   def destroy

@@ -11,7 +11,7 @@ class Roster < ActiveRecord::Base
   include OrganizeRosterable
 
   def mem_players
-    @mem_players ||= self.players
+    @mem_players ||= self.players.sort
   end
 
   def mem_position_ids(player_id)
