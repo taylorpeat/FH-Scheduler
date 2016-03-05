@@ -93,8 +93,7 @@ class RostersController < ApplicationController #didn't render in controllers?
     @week_change = params[:week_change].to_i || 0
     @start_day = (Date.today.beginning_of_week + @week_change.week).beginning_of_day
     if params[:by_game] == "true"
-      @teams = @teams.sort_by { |team| team.games.select\
-               { |game| game.date.between?(@start_day, @start_day + 6.days) }.count }.reverse
+      @teams = @teams.sort_by { |team| team.games.select { |game| game.date.between?(@start_day, @start_day + 6.days) }.count }.reverse
     end
     respond_to :js, :html
   end
