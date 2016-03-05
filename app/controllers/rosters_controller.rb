@@ -70,7 +70,6 @@ class RostersController < ApplicationController #didn't render in controllers?
       end
       redirect_to roster_path(@roster, week_change: params[:week_change], day_change: params[:day_change])
     else
-      binding.pry
       set_roster
       if set_roster_positions
         redirect_to roster_path(@roster)
