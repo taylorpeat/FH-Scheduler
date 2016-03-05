@@ -5,7 +5,8 @@
       <%= label_tag :team_name, "Team Name" %> 
     </div>
     <div class="col-xs-3">
-        <%= text_field_tag :team_name, nil, class: "form-control", placeholder: "Team Name", value: @roster.name %>
+        <%= text_field_tag :team_name, nil, class: "form-control", placeholder: "Team Name",
+            value: @roster.name %>
     </div>
   </div>
   <hr>
@@ -17,7 +18,8 @@
         <%= label_tag symbol, position.name %>
       </div>
       <div class="col-xs-2">
-        <%= number_field_tag symbol, default_value(position, symbol), min: 0, max: 10, class: "form-control" %>
+        <%= number_field_tag symbol, default_value(position, symbol), min: 0, max: 10,
+            class: "form-control" %>
       </div>
     </div>
   <% end %>

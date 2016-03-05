@@ -1,5 +1,7 @@
 if (<%= @tab == "positions" %>) {
-  $('#edit-tab-contents').html("<%= escape_javascript(render 'roster_positions', submit_wording: "Update Roster Positions", link_path: roster_path(@roster), form_method: 'put') %>").fadeIn(100);
+  $('#edit-tab-contents').html("<%= escape_javascript(render 'roster_positions',
+    submit_wording: "Update Roster Positions", link_path: roster_path(@roster),
+    form_method: 'put') %>").fadeIn(100);
 } else {
   $('#edit-tab-contents').html("<%= escape_javascript(render 'edit_players') %>").fadeIn(100);
 }

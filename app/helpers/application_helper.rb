@@ -84,7 +84,8 @@ module ApplicationHelper
   end
 
   def default_value(position, symbol)
-    @roster.positions.empty? ? ROSTER_DEFAULTS[symbol] : @roster.positions.select { |pos| pos.id == position.id }.count
+    @roster.positions.empty? ? ROSTER_DEFAULTS[symbol] : @roster.positions.select { |pos| pos.id ==
+    position.id }.count
   end
 
 end

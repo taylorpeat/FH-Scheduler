@@ -3,7 +3,8 @@
     <% set_open_games_per_position(@player_to_drop) %>
     <% dropped_player = droppable_players.detect { |player| player.id == @player_to_drop } %>
     <hr>
-    <p><%= "Dropping: #{dropped_player.name} - #{formatted_datetime(changed_week)} to #{formatted_datetime(changed_week.end_of_week)}" %></p>
+    <p><%= "Dropping: #{dropped_player.name} - #{formatted_datetime(changed_week)} to\
+            #{formatted_datetime(changed_week.end_of_week)}" %></p>
     <br>
     <table>
       <col width="300">
@@ -31,12 +32,16 @@
       <tbody>
         <% for row_num in 0..149 %>
           <tr>
-          <% [five_game_players, four_game_players, three_game_players, two_game_players, one_game_players].reject {|players| players.empty? }.slice(0..2).each do |players| %>
+          <% [five_game_players, four_game_players, three_game_players, two_game_players,
+              one_game_players].reject {|players| players.empty? }.slice(0..2).each do |players| %>
             <% player = players[row_num] %>
             <% if player %>
               <td>
-                <%= link_to roster_path(@roster, week_change: @week_change, day_change: @day_change, drop: @player_to_drop, add: player.id), class: "btn btn-default col-md-10 btn-block", method: :put do %>
-                  <%= "#{player.id}: #{player.name} - #{get_player_positions(player)} - #{player.team.name}" %>
+                <%= link_to roster_path(@roster, week_change: @week_change, day_change: @day_change,
+                    drop: @player_to_drop, add: player.id), class: "btn btn-default col-md-10 btn-block",
+                    method: :put do %>
+                  <%= "#{player.id}: #{player.name} - #{get_player_positions(player)} -\
+                       #{player.team.name}" %>
                 <% end %>
               </td>
             <% else %>

@@ -46,20 +46,18 @@ class RostersController < ApplicationController #didn't render in controllers?
   end
 
   def update
-    binding.pry
     if params[:drop] || params[:roster]
       params[:roster] = add_remove_players(params[:drop], params[:add]) if params[:drop]
       players_added = params[:roster]["player_ids"]
       duplicates = players_added.select { |id| players_added.count(id) > 1 && id != "" }.uniq
       if params[:roster]
-        binding.pry
-        if @roster.authenticate_(arrange_roster_ids(roster_params["player_ids"]))
+        if @roster.update(arrange_roster_ids(roster_params["player_ids"]))
           @roster.players.clear
           @roster.update(arrange_roster_ids(roster_params["player_ids"]))
           if duplicates.empty? 
             flash[:success] = "Your roster has been updated."
           else
-            flash[:warning] = "#{duplicates.map {|x| Player.find(x.to_i).name }.join(", ")} #{'was'.pluralize(duplicates.size)} selected multiple times. #{'Duplicate'.pluralize(duplicates.size)} #{'has'.pluralize(duplicates.size)} been removed." unless duplicates.empty?
+            flash[:warning] =  duplicate_warning_message
             redirect_to edit_roster_path(@roster) and return
           end
         else
@@ -95,7 +93,8 @@ class RostersController < ApplicationController #didn't render in controllers?
     @week_change = params[:week_change].to_i || 0
     @start_day = (Date.today.beginning_of_week + @week_change.week).beginning_of_day
     if params[:by_game] == "true"
-      @teams = @teams.sort_by { |team| team.games.select { |game| game.date.between?(@start_day, @start_day + 6.days) }.count }.reverse
+      @teams = @teams.sort_by { |team| team.games.select\
+               { |game| game.date.between?(@start_day, @start_day + 6.days) }.count }.reverse
     end
     respond_to :js, :html
   end
@@ -114,16 +113,17 @@ class RostersController < ApplicationController #didn't render in controllers?
     end
 
     def set_roster_positions
-      position_arr = {1 => params[:C].to_i, 2 => params[:LW].to_i, 3 => params[:RW].to_i, 4 => params[:D].to_i,
-                 6 => params[:F].to_i, 7 => params[:U].to_i, 5 => params[:G].to_i, 8 => params[:BN].to_i,
-                 9 => params[:IR].to_i}
+      position_arr = {1 => params[:C].to_i, 2 => params[:LW].to_i, 3 => params[:RW].to_i,
+                      4 => params[:D].to_i, 6 => params[:F].to_i, 7 => params[:U].to_i,
+                      5 => params[:G].to_i, 8 => params[:BN].to_i, 9 => params[:IR].to_i}
       @roster = @roster || Roster.new
       @roster.user_id = @roster.user_id || current_user.id
       @roster.name = params[:team_name]
       @roster.player_max = position_arr.values.sum
       dropped_players = []
       if @roster.player_max < @roster.players.count
-        dropped_players = @roster.players.delete(@roster.players.last(@roster.players.count - @roster.player_max))
+        dropped_players = @roster.players.delete(@roster.players.last(@roster.players.count -
+        @roster.player_max))
       end
       @roster.position_rosters.clear if @roster.position_rosters
       position_arr.each do |pos, num|
@@ -133,12 +133,24 @@ class RostersController < ApplicationController #didn't render in controllers?
       end
       if @roster.save
         unless dropped_players.empty?
-          flash[:warning] = "#{dropped_players.map { |player| player.name }.join(", ")} #{"has".pluralize(dropped_players.size)} been removed from the roster due to the reduced positions."
+          flash[:warning] = roster_reduced_warning_message
         end
         return true
       else
         return false
       end
+    end
+
+    def duplicate_warning_message
+      "#{duplicates.map {|x| Player.find(x.to_i).name }.join(", ")}
+       #{'was'.pluralize(duplicates.size)} selected multiple times. #{'Duplicate'.pluralize(duplicates.size)} \
+       #{'has'.pluralize(duplicates.size)} been removed."
+    end
+
+    def roster_reduced_warning_message
+      "#{dropped_players.map { |player| player.name }.join(", ")} \
+       #{"has".pluralize(dropped_players.size)} been removed from the roster due to the reduced \
+       positions."
     end
 end
 

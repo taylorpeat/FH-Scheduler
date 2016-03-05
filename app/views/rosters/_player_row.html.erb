@@ -4,7 +4,8 @@
 <tr>
   <td><%= Position.find(pos).name || "BN" %></td>
   <td>
-    <%= row_player ? "#{row_player.name} #{@teams.find(row_player.team_id).name.upcase} - #{get_roster_player_positions(player_id)}" : "Empty" %>
+    <%= row_player ? "#{row_player.name} #{@teams.find(row_player.team_id).name.upcase} -\
+        #{get_roster_player_positions(player_id)}" : "Empty" %>
   </td>
   <% conflicts = 0 %>
   <% for j in 0..13 %>

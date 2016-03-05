@@ -6,13 +6,16 @@
 <table class="table table-bordered table-hover table-responsive">
   <%= render 'table_headers', player_title: "Goaltenders", white_space: "______________________" %>
   <tbody>
-    <% @daily_rosters[(changed_date.to_date - changed_week.to_date).to_i].select { |pos, player_ids| pos == 5 }.each do |pos, player_ids| %>
+    <% @daily_rosters[(changed_date.to_date - changed_week.to_date).to_i].select\
+       { |pos, player_ids| pos == 5 }.each do |pos, player_ids| %>
       <% player_ids.each do |player_id| %>
         <%= render 'player_row', player_id: player_id, pos: pos %>
       <% end %>
     <% end %>
-    <% @daily_rosters[(changed_date.to_date - changed_week.to_date).to_i].select { |pos, player_ids| [8,9].include?(pos) }.each do |pos, player_ids| %>
-      <% player_ids.select { |player_id| player_id != "" && @roster.mem_position_ids(player_id).include?(5) }.each do |player_id| %>
+    <% @daily_rosters[(changed_date.to_date - changed_week.to_date).to_i].select\
+       { |pos, player_ids| [8,9].include?(pos) }.each do |pos, player_ids| %>
+      <% player_ids.select { |player_id| player_id != "" && @roster.mem_position_ids(player_id)
+         .include?(5) }.each do |player_id| %>
         <%= render 'player_row', player_id: player_id, pos: pos %>
       <% end %>
     <% end %>

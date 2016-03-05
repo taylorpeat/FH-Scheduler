@@ -8,7 +8,8 @@
       <% else %>
         <th>
       <% end %>
-      <%= link_to table_time(changed_week + i.day), roster_path(@roster, day_change: initial_time_offset + i, week_change: @week_change), remote: true %>
+      <%= link_to table_time(changed_week + i.day), roster_path(@roster,
+          day_change: initial_time_offset + i, week_change: @week_change), remote: true %>
       </th>
       <% if [6,13].include?(i) %>
         <th class="games-col"><%= "Games" %></th>

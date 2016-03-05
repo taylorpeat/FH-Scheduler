@@ -5,7 +5,8 @@
       <% for i in 0..13 %>
         <th><%= table_time(changed_week + i.day) %></th>
         <% if [6,13].include?(i) %>
-          <th class="games-col"><%= link_to "Games", team_schedule_path(week_change: @week_change, by_game: true), remote: true %></th>
+          <th class="games-col"><%= link_to "Games", team_schedule_path(week_change: @week_change,
+              by_game: true), remote: true %></th>
         <% end %>
       <% end %>
     </tr>

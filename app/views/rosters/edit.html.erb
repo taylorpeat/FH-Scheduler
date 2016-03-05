@@ -11,7 +11,8 @@
 
 <div id="edit-tab-contents">
   <% if params[:tab] == "positions" %>
-    <%= render 'roster_positions', submit_wording: "Update Roster Positions", link_path: roster_path(@roster), form_method: 'put' %>
+    <%= render 'roster_positions', submit_wording: "Update Roster Positions",
+               link_path: roster_path(@roster), form_method: 'put' %>
   <% else %>
     <%= render 'edit_players' %>
   <% end %>

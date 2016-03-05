@@ -6,8 +6,10 @@
 <table class="table table-bordered table-hover table-responsive">
   <%= render 'table_headers', player_title: "Forwards/Defensemen", white_space: "____________" %>
   <tbody>
-    <% @daily_rosters[(changed_date.to_date - changed_week.to_date).to_i].select { |pos, player_ids| ![5, :conflicts, :full].include?(pos) }.each do |pos, player_ids| %>
-      <% player_ids.select { |player_id| player_id == "" || !@roster.mem_position_ids(player_id).include?(5) }.each do |player_id| %>
+    <% @daily_rosters[(changed_date.to_date - changed_week.to_date).to_i].select { |pos, player_ids|\
+       ![5, :conflicts, :full].include?(pos) }.each do |pos, player_ids| %>
+      <% player_ids.select { |player_id| player_id == "" || !@roster.mem_position_ids(player_id)
+         .include?(5) }.each do |player_id| %>
         <%= render 'player_row', player_id: player_id, pos: pos %>
       <% end %>
     <% end %>

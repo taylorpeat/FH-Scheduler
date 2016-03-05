@@ -5,7 +5,8 @@
       <span>Previous Day</span>
     </button>
   <% else %>
-    <%= link_to roster_path(@roster, day_change: @day_change - 1, week_change: @week_change, drop: @player_to_drop), class: "btn btn-default", remote: true do %>
+    <%= link_to roster_path(@roster, day_change: @day_change - 1, week_change: @week_change,
+                            drop: @player_to_drop), class: "btn btn-default", remote: true do %>
       <i class="glyphicon glyphicon-chevron-left"></i>
       <span>Previous Day</span>
     <% end %> 
@@ -16,7 +17,8 @@
       <i class="glyphicon glyphicon-chevron-right"></i>
     </button>
   <% else %>
-    <%= link_to roster_path(@roster, day_change: @day_change + 1, week_change: @week_change, drop: @player_to_drop), class: "btn btn-default", remote: true do %>
+    <%= link_to roster_path(@roster, day_change: @day_change + 1, week_change: @week_change,
+                            drop: @player_to_drop), class: "btn btn-default", remote: true do %>
       <span>Next Day</span>
       <i class="glyphicon glyphicon-chevron-right"></i>
     <% end %> 
