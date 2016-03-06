@@ -66,7 +66,7 @@ module OrganizeRosterable
 
     def can_position_be_open?(position_id)
       return true if move_other_players([position_id], [position_id])\
-                     { |slot_val| !mem_team_game(self.mem_players.find(slot_val).team, day) }
+                     { |slot_val| slot_val == "" || !mem_team_game(mem_players.find(slot_val).team, day) }
       false
     end
 
