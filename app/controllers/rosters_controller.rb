@@ -57,7 +57,7 @@ class RostersController < ApplicationController #didn't render in controllers?
           if duplicates.empty? 
             flash[:success] = "Your roster has been updated."
           else
-            flash[:warning] =  duplicate_warning_message
+            flash[:warning] =  duplicate_warning_message(duplicates)
             redirect_to edit_roster_path(@roster) and return
           end
         else
@@ -126,7 +126,7 @@ class RostersController < ApplicationController #didn't render in controllers?
       create_roster_positions(position_arr)
       if @roster.save
         unless dropped_players.empty?
-          flash[:warning] = roster_reduced_warning_message
+          flash[:warning] = roster_reduced_warning_message(dropped_players)
         end
         return true
       else
@@ -148,13 +148,13 @@ class RostersController < ApplicationController #didn't render in controllers?
       end
     end
 
-    def duplicate_warning_message
+    def duplicate_warning_message(duplicates)
       "#{duplicates.map {|x| Player.find(x.to_i).name }.join(", ")}
        #{'was'.pluralize(duplicates.size)} selected multiple times. #{'Duplicate'.pluralize(duplicates.size)} \
        #{'has'.pluralize(duplicates.size)} been removed."
     end
 
-    def roster_reduced_warning_message
+    def roster_reduced_warning_message(dropped_players)
       "#{dropped_players.map { |player| player.name }.join(", ")} \
        #{"has".pluralize(dropped_players.size)} been removed from the roster due to the reduced \
        positions."
